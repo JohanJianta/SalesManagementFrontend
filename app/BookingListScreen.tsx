@@ -1,6 +1,8 @@
 import React from 'react';
+import { router } from 'expo-router'; 
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { StarIcon, PlusIcon } from 'react-native-heroicons/outline';
+import BottomNavbar from '@/assets/Component/BottomNavbar';
 
 // Define the type for a booking item
 type BookingItem = {
@@ -53,14 +55,21 @@ const BookingListScreen: React.FC = () => {
         </ScrollView>
         
         {/* Add Button */}
-        <TouchableOpacity 
-          onPress={handleAddBooking}
-          className="absolute bottom-6 right-6 bg-white w-14 h-14 rounded-full items-center justify-center shadow-lg"
-        >
-          <PlusIcon size={30} color="#0d9488" />
-        </TouchableOpacity>
+        <TouchableOpacity
+      onPress={() => router.push("/AddBookingScreen")} // Use router.push() to navigate
+      className="absolute bottom-6 right-6 bg-white w-14 h-14 rounded-full items-center justify-center shadow-lg"
+    >
+      <PlusIcon size={30} color="#0d9488" />
+    </TouchableOpacity>
       </View>
+      <BottomNavbar
+              activeTab="Booking"
+              onNavigate={(tab) => {
+                console.log(`Navigating to ${tab}`);
+              }}
+            />
     </SafeAreaView>
+    
   );
 };
 

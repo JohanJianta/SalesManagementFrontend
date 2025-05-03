@@ -48,7 +48,7 @@ export default function HomeScreen() {
                 source={item.img}
                 style={{
                   width: '100%',
-                  height: (width - 32) * 0.6,
+                  height: (width - 30) * 0.6,
                 }}
                 resizeMode="cover"
               />

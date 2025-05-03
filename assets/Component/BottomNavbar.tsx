@@ -1,18 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
-import { Home,NotepadText, BadgePercent } from 'lucide-react-native';
+import { Home, NotepadText, BadgePercent } from 'lucide-react-native';
+import { router } from 'expo-router'; // import expo-router
 
 interface Props {
   activeTab?: string;
-  onNavigate?: (tab: string) => void;
+  onNavigate: (tab: string) => void; // Make onNavigate a required property
 }
 
 export default function BottomNavbar({ activeTab = 'Home', onNavigate }: Props) {
   const navItems = [
-    { label: 'Home', icon: Home },
-    { label: 'Booking', icon: NotepadText },
-    { label: 'Promo', icon: BadgePercent },
+    { label: 'Home', icon: Home, route: '/home' },
+    { label: 'Booking', icon: NotepadText, route: '/BookingListScreen' },
+    { label: 'Promo', icon: BadgePercent, route: '' }, // Promo route is empty
   ];
+
+  const handleNavigation = (route: string) => {
+    if (route) {
+      router.push(route as `/home` | `/BookingListScreen` | "/");
+    }
+  };
 
   return (
     <View
@@ -20,14 +27,17 @@ export default function BottomNavbar({ activeTab = 'Home', onNavigate }: Props) 
         Platform.OS === 'ios' ? 'shadow-md shadow-black' : 'elevation-4'
       } rounded-t-2xl`}
     >
-      {navItems.map(({ label, icon: Icon }) => {
+      {navItems.map(({ label, icon: Icon, route }) => {
         const isActive = label === activeTab;
         return (
           <TouchableOpacity
             key={label}
             className="items-center flex-1 py-2"
             activeOpacity={0.7}
-            onPress={() => onNavigate?.(label)}
+            onPress={() => {
+              handleNavigation(route);
+              onNavigate(label); // Call onNavigate when an item is pressed
+            }}
           >
             <Icon size={26} color={isActive ? '#22d3ee' : '#ffffff'} />
             <Text className={`text-xs mt-1 ${isActive ? 'text-cyan-300 font-semibold' : 'text-white'}`}>

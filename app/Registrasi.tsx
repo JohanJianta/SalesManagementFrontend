@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { router } from "expo-router";
-export default function LoginPage() {
+
+export default function RegistrationPage() {
   return (
     <View className="flex-1 bg-[#166d75] pt-20 px-6 items-center">
       <Image
@@ -11,13 +12,23 @@ export default function LoginPage() {
       />
 
       <View className="w-full max-w-sm">
+        {/* Nama Lengkap */}
+        <Text className="text-white text-sm font-medium mb-1 tracking-wide">
+          Nama Lengkap
+        </Text>
+        <TextInput
+          placeholder="Masukkan nama lengkap"
+          placeholderTextColor="#4B5563" // Tailwind gray-600
+          className="w-full rounded-lg bg-[#e6f0f1] text-gray-800 px-4 py-3 mb-6 border border-gray-300"
+        />
+
         {/* Email */}
         <Text className="text-white text-sm font-medium mb-1 tracking-wide">
           Email
         </Text>
         <TextInput
-          placeholder="Enter your email"
-          placeholderTextColor="#4B5563" // Tailwind gray-600
+          placeholder="Masukkan email"
+          placeholderTextColor="#4B5563"
           className="w-full rounded-lg bg-[#e6f0f1] text-gray-800 px-4 py-3 mb-6 border border-gray-300"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -28,24 +39,35 @@ export default function LoginPage() {
           Password
         </Text>
         <TextInput
-          placeholder="Enter your password"
+          placeholder="Masukkan password"
+          placeholderTextColor="#4B5563"
+          className="w-full rounded-lg bg-[#e6f0f1] text-gray-800 px-4 py-3 mb-6 border border-gray-300"
+          secureTextEntry
+        />
+
+        {/* Konfirmasi Password */}
+        <Text className="text-white text-sm font-medium mb-1 tracking-wide">
+          Konfirmasi Password
+        </Text>
+        <TextInput
+          placeholder="Konfirmasi password"
           placeholderTextColor="#4B5563"
           className="w-full rounded-lg bg-[#e6f0f1] text-gray-800 px-4 py-3 mb-8 border border-gray-300"
           secureTextEntry
         />
 
-        {/* Login Button */}
+        {/* Daftar Button */}
         <TouchableOpacity className="w-full bg-[#0f4a50] py-3 rounded-lg active:opacity-90"
-        onPress={() => router.push("/home")}>
+          onPress={() => router.push("/home")}>
           <Text className="text-white font-semibold text-base text-center tracking-widest">
-            LOGIN
+            DAFTAR
           </Text>
         </TouchableOpacity>
 
-         {/* Belum punya akun? Registrasi */}
-         <TouchableOpacity className="mt-4" onPress={() => router.push("/Registrasi")}>
+        {/* Punya akun? Login */}
+        <TouchableOpacity className="mt-4" onPress={() => router.push("/loginpage")}>
           <Text className="text-white text-sm text-center">
-            Belum punya akun? <Text className="font-semibold">Registrasi</Text>
+            Sudah punya akun? <Text className="font-semibold">Login</Text>
           </Text>
         </TouchableOpacity>
       </View>
