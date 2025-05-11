@@ -1,57 +1,60 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Linking, Alert } from 'react-native';
+import Svg, { Image, Rect, G } from 'react-native-svg';
 
-const App = () => {
+const Maps = () => {
+  const handleLink = (url: string) => {
+    if (!url || url === '#') {
+      Alert.alert('Info', 'Tidak ada aksi untuk area ini.');
+    } else {
+      Linking.openURL(url).catch(() =>
+        Alert.alert('Error', 'Gagal membuka tautan: ' + url)
+      );
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Background Peta */}
-      <Image
-        source={require('../assets/images/Masterplan-CitraLand-City-CPI-Makassar-1536x1536.jpg')}
-        style={styles.mapImage}
-        resizeMode="contain"
-      />
+    <View className="flex-1 bg-white">
+      <Svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 1536 1536"
+      >
+        {/* Background image */}
+        <Image
+          width={1536}
+          height={1536}
+          href={require('../assets/images/Masterplan-CitraLand-City-CPI-Makassar-1536x1536.jpg')}
+        />
 
-      {/* Cluster 1 */}
-      <View style={[styles.pin, { top: '20%', left: '35%', backgroundColor: 'red' }]}>
-        <Text style={styles.label}>Cluster 1</Text>
-      </View>
+        {/* Cluster A */}
+        <G onPress={() => handleLink('http://localhost:8081/home')}>
+          <Rect
+            x={493.037}
+            y={460.946}
+            width={160.456}
+            height={262.564}
+            fill="transparent"
+            stroke="white"
+            strokeWidth={2}
+          />
+        </G>
 
-      {/* Cluster 2 */}
-      <View style={[styles.pin, { top: '20%', left: '70%', backgroundColor: 'blue' }]}>
-        <Text style={styles.label}>Cluster 2</Text>
-      </View>
-
-      {/* Cluster 3 */}
-      <View style={[styles.pin, { top: '70%', left: '30%', backgroundColor: 'green' }]}>
-        <Text style={styles.label}>Cluster 3</Text>
-      </View>
-
-      {/* Cluster 4 */}
-      <View style={[styles.pin, { top: '70%', left: '70%', backgroundColor: 'orange' }]}>
-        <Text style={styles.label}>Cluster 4</Text>
-      </View>
+        {/* Cluster B */}
+        <G onPress={() => handleLink('http://localhost:8081/BookingListScreen')}>
+          <Rect
+            x={694.336}
+            y={703.088}
+            width={129.823}
+            height={154.621}
+            fill="transparent"
+            stroke="white"
+            strokeWidth={2}
+          />
+        </G>
+      </Svg>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  mapImage: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  pin: {
-    position: 'absolute',
-    padding: 6,
-    borderRadius: 12,
-  },
-  label: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
-
-export default App;
+export default Maps;

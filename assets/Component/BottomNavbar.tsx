@@ -12,12 +12,12 @@ export default function BottomNavbar({ activeTab = 'Home', onNavigate }: Props) 
   const navItems = [
     { label: 'Home', icon: Home, route: '/home' },
     { label: 'Booking', icon: NotepadText, route: '/BookingListScreen' },
-    { label: 'Promo', icon: BadgePercent, route: '' }, // Promo route is empty
+    { label: 'Promo', icon: BadgePercent, route: '/promo' }, // Promo route is empty
   ];
 
   const handleNavigation = (route: string) => {
     if (route) {
-      router.push(route as `/home` | `/BookingListScreen` | "/");
+      router.push(route as `/home` | `/BookingListScreen` | `/promo`);
     }
   };
 
