@@ -9,6 +9,13 @@ const promos = [
     title: 'Promo Top Hotel - Liburan Tahun Baru',
     period: 'Periode 5 - 8 Dec 17',
   },
+
+  {
+    id: 1,
+    image: require('../assets/images/promo.jpeg'),
+    title: 'Promo Top Hotel - Liburan Tahun Baru',
+    period: 'Periode 5 - 8 Dec 17',
+  },
   // ...promo lainnya
 ];
 
@@ -17,34 +24,36 @@ const Promo = () => {
   const isLargeScreen = width >= 768;
 
   return (
-    
+
     <View className="flex-1 bg-teal-600">
       <ScrollView className="p-4">
-        <View className="flex flex-row flex-wrap justify-between">
-          {promos.map((item) => (
-            <View
-              key={item.id}
-              className="w-[48%] mb-4 bg-white rounded-xl shadow overflow-hidden"
-            >
-              <Image
-                source={item.image}
-                resizeMode="cover"
-                style={{
-                  width: isLargeScreen ? '135%' : '100%',
-                  height: isLargeScreen ? 180 : 128,
-                  marginLeft: isLargeScreen ? -30 : 0,
-                }}
-              />
-              <View className="p-2">
-                <Text className="text-sm font-semibold">{item.title}</Text>
-                <Text className="text-xs text-gray-500">{item.period}</Text>
-              </View>
-              <TouchableOpacity className="bg-orange-500 p-2 items-center">
-                <Text className="text-white text-sm font-semibold">See Detail</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+        <View className="flex-row flex-wrap justify-center justify-evenly">
+  {promos.map((item) => (
+    <View
+      key={item.id}
+      className={`mb-4 bg-white rounded-xl shadow overflow-hidden
+        ${isLargeScreen ? 'w-[40%] mx-2' : 'w-[90%]'}`}
+    >
+      <Image
+        source={item.image}
+        resizeMode="cover"
+        style={{
+          width: isLargeScreen ? '135%' : '100%',
+          height: isLargeScreen ? 180 : 128,
+          marginLeft: isLargeScreen ? -30 : 0,
+        }}
+      />
+      <View className="p-2">
+        <Text className="text-sm font-semibold">{item.title}</Text>
+        <Text className="text-xs text-gray-500">{item.period}</Text>
+      </View>
+      <TouchableOpacity className="bg-orange-500 p-2 items-center">
+        <Text className="text-white text-sm font-semibold">See Detail</Text>
+      </TouchableOpacity>
+    </View>
+  ))}
+</View>
+
       </ScrollView>
 
       {/* BottomNavbar fixed di bawah */}

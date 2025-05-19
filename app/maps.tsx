@@ -14,7 +14,7 @@ const Maps = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-teal-700">
       <Svg
         width="100%"
         height="100%"
