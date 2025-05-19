@@ -28,7 +28,7 @@ const Maps = () => {
         />
 
         {/* Cluster A */}
-        <G onPress={() => handleLink('http://localhost:8081/home')}>
+        <G onPress={() => handleLink('http://localhost:8081/CombinedScreen')}>
           <Rect
             x={493.037}
             y={460.946}
