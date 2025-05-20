@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
-import { Home, NotepadText, BadgePercent } from 'lucide-react-native';
+import { Map, NotepadText, BadgePercent } from 'lucide-react-native';
 import { router } from 'expo-router'; // import expo-router
 
 interface Props {
@@ -10,14 +10,14 @@ interface Props {
 
 export default function BottomNavbar({ activeTab = 'Home', onNavigate }: Props) {
   const navItems = [
-    { label: 'Home', icon: Home, route: '/home' },
+    { label: 'Map', icon: Map, route: '/maps' },
     { label: 'Booking', icon: NotepadText, route: '/BookingListScreen' },
     { label: 'Promo', icon: BadgePercent, route: '/promo' }, // Promo route is empty
   ];
 
   const handleNavigation = (route: string) => {
     if (route) {
-      router.push(route as `/home` | `/BookingListScreen` | `/promo`);
+      router.push(route as `/maps` | `/BookingListScreen` | `/promo`);
     }
   };
 

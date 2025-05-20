@@ -22,7 +22,7 @@ const CombinedScreen = () => {
       <View className="h-[55%]">
        
         {/* Optional dim overlay for higher contrast against the list below */}
-        <View className="absolute inset-0 bg-teal-700 " pointerEvents="none" />
+        <View className="absolute inset-0" pointerEvents="none" />
         <Maps />
       </View>
 

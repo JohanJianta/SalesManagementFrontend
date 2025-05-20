@@ -157,9 +157,9 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 220,
-    height: 200,
-    borderRadius: 10,
+    width: 150,
+    height: 150,
+   
   },
 
   title: {
