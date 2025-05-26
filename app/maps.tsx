@@ -52,7 +52,7 @@ const Maps = () => {
 
           {clusters.map((cluster) =>
             cluster.image_hotspots?.map((spot: any, index: number) => (
-              <G key={`${cluster.id}-${index}`} onPress={() => handlePress(cluster.name)}>
+              <G key={`${cluster.id}-${index}`} onPressOut={() => handlePress(cluster.name)}>
                 {spot.shape === 'rectangle' && (
                   <>
                     <Rect

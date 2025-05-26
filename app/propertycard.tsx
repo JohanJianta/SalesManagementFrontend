@@ -52,21 +52,26 @@ const PropertyCard = ({
 
   // Determine card width dynamically based on device width (mobile vs tablet)
   const getCardWidth = () => {
-    if (windowWidth >= 768) {
-      // iPad Pro and larger tablets
-      return 600;
-    } else if (windowWidth >= 600) {
-      // Medium tablets / large phones
-      return 450;
+    if (windowWidth >= 1024) {
+      // Tablet landscape atau desktop
+      return windowWidth / 3.2;
+    } else if (windowWidth >= 768) {
+      // Tablet potrait
+      return windowWidth / 2.2;
     } else {
-      // Mobile devices
-      return windowWidth * 0.9; // 90% of screen width
+      // Mobile
+      return windowWidth * 0.9;
     }
   };
 
+
   return (
     <View style={styles.cardContainer}>
-      <View style={[styles.card, { width: getCardWidth() }]}>
+      <View
+        className="bg-[#155e61] rounded-2xl p-3 min-h-[240px]"
+        style={{ width: getCardWidth() }}
+      >
+
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={image} style={styles.image} resizeMode="cover" />
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -110,48 +115,59 @@ export default function PropertyCardPage() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0d7377' }}>
       <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
-        <PropertyCard
-          title="Alexandrite"
-          priceRange="3~5 miliar"
-          totalUnit={3}
-          units={3}
-          image={require('../assets/images/azure-apart.jpg')}
-          unitDetails={[
-            { type: 'Standar', price: '3 Miliar' },
-            { type: 'Sudut', price: '5 Miliar' },
-          ]}
-          availableUnits={['5 (standar)', '6 (standar)', '15 (standar)']}
-        />
+        <View
+          style={{
+            flexDirection: windowWidth >= 768 ? 'row' : 'column',
+            justifyContent: windowWidth >= 768 ? 'space-evenly' : 'center',
+            flexWrap: 'wrap',
+          }}
+        >
+          {/* Card 1 */}
+          <PropertyCard
+            title="Alexandrite"
+            priceRange="3~5 miliar"
+            totalUnit={3}
+            units={3}
+            image={require('../assets/images/azure-apart.jpg')}
+            unitDetails={[
+              { type: 'Standar', price: '3 Miliar' },
+              { type: 'Sudut', price: '5 Miliar' },
+            ]}
+            availableUnits={['5 (standar)', '6 (standar)', '15 (standar)']}
+          />
 
-        <PropertyCard
-          title="Alexandrite"
-          priceRange="3~5 miliar"
-          totalUnit={10}
-          units={10}
-          image={require('../assets/images/azure-apart.jpg')}
-          unitDetails={[
-            { type: 'Standar', price: '3 Miliar' },
-            { type: 'Sudut', price: '5 Miliar' },
-          ]}
-          availableUnits={['No. 1', 'No. 2', 'No. 3', 'No. 4']}
-        />
+          {/* Card 2 */}
+          <PropertyCard
+            title="Emerald"
+            priceRange="3~5 miliar"
+            totalUnit={10}
+            units={10}
+            image={require('../assets/images/azure-apart.jpg')}
+            unitDetails={[
+              { type: 'Standar', price: '3 Miliar' },
+              { type: 'Sudut', price: '5 Miliar' },
+            ]}
+            availableUnits={['No. 1', 'No. 2', 'No. 3']}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
   cardContainer: {
-    paddingHorizontal: 6,
-    paddingVertical: 6,
+    paddingHorizontal: 7.3,
+    paddingVertical: 7.3,
     alignItems: 'center',
   },
 
   card: {
     backgroundColor: '#155e61',
-    borderRadius: 12,
-    padding: 12,
-    minHeight: 240,
+    borderRadius: 13,
+    padding: 13,
+    minHeight: 230,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -159,7 +175,7 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 150,
-   
+
   },
 
   title: {
