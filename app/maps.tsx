@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Alert, ActivityIndicator, Dimensions } from 'react-native';
-import Svg, { Image as SvgImage, Rect, G, Text, Circle } from 'react-native-svg';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomNavbar from '@/assets/Component/BottomNavbar';
-const { width, height } = Dimensions.get('window');
-import { router } from 'expo-router';
+import Svg, { Image as SvgImage, Rect, G, Text, Circle, Polygon } from "react-native-svg";
+import { View, Alert, ActivityIndicator, SafeAreaView, Dimensions } from "react-native";
+import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
+import BottomNavbar from "@/assets/Component/BottomNavbar";
+import clusterRepo from "./repositories/clusterRepo";
+import React, { useEffect, useState } from "react";
+import { router } from "expo-router";
 
+const { width, height } = Dimensions.get("screen");
+const baseSize = height >= width ? height : width;
 
 const Maps = () => {
-  const [clusters, setClusters] = useState<any[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
   const [masterplanUrl, setMasterplanUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchClusters = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token tidak ditemukan.');
-
-      const response = await axios.get('http://18.139.110.33:3000/api/clusters', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setClusters(response.data.clusters || []);
-      setMasterplanUrl(response.data.masterplan_url || null);
+      const clusterResponse = await clusterRepo.getClusters();
+      setClusters(clusterResponse.clusters);
+      setMasterplanUrl(clusterResponse.masterplan_url);
     } catch (error) {
-      console.error('Gagal memuat cluster:', error);
-      Alert.alert('Error', 'Gagal mengambil data cluster dari API.');
+      Alert.alert("Error", "Gagal mengambil data cluster dari API.");
     } finally {
       setLoading(false);
     }
@@ -36,105 +30,98 @@ const Maps = () => {
     fetchClusters();
   }, []);
 
-  const handlePress = (clusterName: string) => {
-    Alert.alert('Cluster', `Kamu memilih ${clusterName}`);
+  const handlePress = (clusterId: number) => {
+    Alert.alert("Cluster", `Kamu memilih ${clusterId}`);
+  };
+
+  const renderHotspot = (spot: ImageHotspot, clusterName: string, key: number) => {
+    switch (spot.shape) {
+      case "rectangle":
+        return (
+          <G key={key} onPressOut={() => handlePress(key)}>
+            <Rect {...spot} fill="transparent" stroke="white" strokeWidth={2} />
+            <Rect x={spot.x} y={spot.y - 40} rx={10} ry={10} width={120} height={30} fill="green" />
+            <Text x={spot.x + 60} y={spot.y - 20} fill="white" fontSize="18" fontWeight="bold" textAnchor="middle">
+              {clusterName}
+            </Text>
+          </G>
+        );
+
+      case "circle":
+        return (
+          <G key={key} onPressOut={() => handlePress(key)}>
+            <Circle cx={spot.x} cy={spot.y} r={spot.radius} fill="transparent" stroke="white" strokeWidth={2} />
+            <Rect x={spot.x - 60} y={spot.y - spot.radius - 40} rx={10} ry={10} width={120} height={30} fill="green" />
+            <Text
+              x={spot.x}
+              y={spot.y - spot.radius - 20}
+              fill="white"
+              fontSize="18"
+              fontWeight="bold"
+              textAnchor="middle"
+            >
+              {clusterName}
+            </Text>
+          </G>
+        );
+
+      case "polygon":
+        const pointsStr = spot.points.map((p) => `${p.x},${p.y}`).join(" ");
+        const labelPoint = spot.points[0];
+
+        return (
+          <G key={key} onPressOut={() => handlePress(key)}>
+            <Polygon points={pointsStr} fill="transparent" stroke="white" strokeWidth={2} />
+            <Rect x={labelPoint.x} y={labelPoint.y - 40} rx={10} ry={10} width={120} height={30} fill="green" />
+            <Text
+              x={labelPoint.x + 60}
+              y={labelPoint.y - 20}
+              fill="white"
+              fontSize="18"
+              fontWeight="bold"
+              textAnchor="middle"
+            >
+              {clusterName}
+            </Text>
+          </G>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <View className="flex-1 bg-teal-700">
-      {loading || !masterplanUrl ? (
-        <ActivityIndicator size="large" color="#fff" className="mt-10" />
-      ) : (
-        <Svg width="100%" height="90%" viewBox="0 0 1536 1536">
-          <SvgImage
-            
-            href={{ uri: masterplanUrl }}
-            preserveAspectRatio="xMidYMid slice"
-          />
+    <SafeAreaView className="flex-1 bg-[#0F7480]">
+      <View className="flex-1">
+        {loading || !masterplanUrl ? (
+          <ActivityIndicator size="large" color="#fff" className="flex-1" />
+        ) : (
+          <ReactNativeZoomableView
+            maxZoom={2.5}
+            minZoom={1}
+            zoomStep={0.5}
+            initialZoom={0.8}
+            contentWidth={baseSize}
+            contentHeight={baseSize}
+          >
+            <Svg width={baseSize} height={baseSize} viewBox="0 0 1920 1920" preserveAspectRatio="none">
+              <SvgImage href={{ uri: masterplanUrl }} x="0" y="0" width={"100%"} height={"100%"} />
+              {clusters.map((cluster) =>
+                cluster.image_hotspots?.map((spot) => renderHotspot(spot, cluster.name, cluster.id))
+              )}
+            </Svg>
+          </ReactNativeZoomableView>
+        )}
+      </View>
 
-          {clusters.map((cluster) =>
-            cluster.image_hotspots?.map((spot: any, index: number) => (
-              <G key={`${cluster.id}-${index}`} onPressOut={() => router.push('/CombinedScreen')}>
-
-                {spot.shape === 'rectangle' && (
-                  <>
-                    <Rect
-                      x={spot.x}
-                      y={spot.y}
-                      width={spot.width}
-                      height={spot.height}
-                      fill="transparent"
-                      stroke="transparent"
-                      strokeWidth={2}
-                    />
-                    <Rect
-                      x={spot.x}
-                      y={spot.y - 40}
-                      rx={10}
-                      ry={10}
-                      width={120}
-                      height={30}
-                      fill="green"
-                    />
-                    <Text
-                      x={spot.x + 60}
-                      y={spot.y - 20}
-                      fill="white"
-                      fontSize="18"
-                      fontWeight="bold"
-                      textAnchor="middle"
-                    >
-                      {cluster.name}
-                    </Text>
-                  </>
-                )}
-
-                {spot.shape === 'circle' && (
-                  <>
-                    <Circle
-                      cx={spot.x}
-                      cy={spot.y}
-                      r={spot.radius}
-                      fill="transparent"
-                      stroke="transparent"
-                      strokeWidth={2}
-                    />
-                    <Rect
-                      x={spot.x - 60}
-                      y={spot.y - spot.radius - 40}
-                      rx={10}
-                      ry={10}
-                      width={120}
-                      height={30}
-                      fill="green"
-                    />
-                    <Text
-                      x={spot.x}
-                      y={spot.y - spot.radius - 20}
-                      fill="white"
-                      fontSize="18"
-                      fontWeight="bold"
-                      textAnchor="middle"
-                    >
-                      {cluster.name}
-                    </Text>
-                  </>
-                )}
-              </G>
-            ))
-          )}
-        </Svg>
-        
-      )}
-      {/* Bottom Navbar */}
-            <BottomNavbar
-              activeTab="Map"
-              onNavigate={(tab) => {
-                console.log(`Navigating to ${tab}`);
-              }}
-            />
-    </View>
-    
+      <BottomNavbar
+        activeTab="Map"
+        onNavigate={(tab) => {
+          console.log(`Navigating to ${tab}`);
+        }}
+      />
+    </SafeAreaView>
   );
 };
 

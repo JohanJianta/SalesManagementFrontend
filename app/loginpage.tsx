@@ -1,34 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import { router } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
+import { router } from "expo-router";
+import { login } from "./repositories/authRepo";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://18.139.110.33:3000/api/auth/login', {
-        email,
-        password
-      });
-
-      const { token } = response.data;
-
-      await AsyncStorage.setItem('token', token);
-
-      router.push('/maps');
+      await login(email, password);
+      router.push("/maps");
     } catch (error: any) {
-      console.error(error);
-      Alert.alert('Login Gagal', error.response?.data?.message || 'Periksa email dan password');
+      Alert.alert("Login Gagal", error.response?.data?.message || "Periksa email dan password");
     }
   };
 
   return (
     <View className="flex-1 bg-[#166d75] pt-20 px-6 items-center">
-      <Image source={require('../assets/images/CPI-logo.png')} className="w-80 h-40 mb-8" resizeMode="contain" />
+      <Image source={require("../assets/images/CPI-logo.png")} className="w-80 h-40 mb-8" resizeMode="contain" />
       <View className="w-full max-w-sm">
         <Text className="text-white text-sm font-medium mb-1">Email</Text>
         <TextInput
@@ -55,7 +45,7 @@ export default function LoginPage() {
           <Text className="text-white font-semibold text-base text-center">LOGIN</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="mt-4" onPress={() => router.push('/Registrasi')}>
+        <TouchableOpacity className="mt-4" onPress={() => router.push("/Registrasi")}>
           <Text className="text-white text-sm text-center">
             Belum punya akun? <Text className="font-semibold">Registrasi</Text>
           </Text>
