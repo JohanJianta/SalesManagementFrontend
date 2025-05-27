@@ -43,7 +43,7 @@ const Maps = () => {
       {loading || !masterplanUrl ? (
         <ActivityIndicator size="large" color="#fff" className="mt-10" />
       ) : (
-        <Svg width="100%" height="100%" viewBox="0 0 1536 1536">
+        <Svg width="100%" height="90%" viewBox="0 0 1536 1536">
           <SvgImage
             
             href={{ uri: masterplanUrl }}
@@ -61,7 +61,7 @@ const Maps = () => {
                       width={spot.width}
                       height={spot.height}
                       fill="transparent"
-                      stroke="white"
+                      stroke="transparent"
                       strokeWidth={2}
                     />
                     <Rect
@@ -93,7 +93,7 @@ const Maps = () => {
                       cy={spot.y}
                       r={spot.radius}
                       fill="transparent"
-                      stroke="white"
+                      stroke="transparent"
                       strokeWidth={2}
                     />
                     <Rect
