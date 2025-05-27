@@ -87,7 +87,7 @@ const CombinedScreen = () => {
                         y={spot.y - 40}
                         rx={10}
                         ry={10}
-                        width={120}
+                        width={130}
                         height={30}
                         fill="green"
                       />
@@ -95,7 +95,7 @@ const CombinedScreen = () => {
                         x={spot.x + 60}
                         y={spot.y - 20}
                         fill="white"
-                        fontSize="18"
+                        fontSize="21"
                         fontWeight="bold"
                         textAnchor="middle"
                       >

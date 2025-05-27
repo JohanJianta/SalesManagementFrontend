@@ -5,6 +5,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavbar from '@/assets/Component/BottomNavbar';
 const { width, height } = Dimensions.get('window');
+import { router } from 'expo-router';
+
 
 const Maps = () => {
   const [clusters, setClusters] = useState<any[]>([]);
@@ -52,7 +54,8 @@ const Maps = () => {
 
           {clusters.map((cluster) =>
             cluster.image_hotspots?.map((spot: any, index: number) => (
-              <G key={`${cluster.id}-${index}`} onPressOut={() => handlePress(cluster.name)}>
+              <G key={`${cluster.id}-${index}`} onPressOut={() => router.push('/CombinedScreen')}>
+
                 {spot.shape === 'rectangle' && (
                   <>
                     <Rect
