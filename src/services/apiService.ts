@@ -1,5 +1,5 @@
-import { getFromStorage } from "../shared/asyncUtil";
-import { BASE_URL } from "../shared/constant";
+import { getFromStorage } from "../shared/asyncStorageUtils";
+import { BASE_URL } from "../shared/constants";
 import axios from "axios";
 
 export async function getRequest<T>(endpoint: string): Promise<T> {
@@ -11,8 +11,8 @@ export async function getRequest<T>(endpoint: string): Promise<T> {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    throw error.response?.data?.errors || error;
   }
 }
 
@@ -29,12 +29,6 @@ export async function postRequest<T>(endpoint: string, data: any, withoutAuthori
     });
     return response.data;
   } catch (error: any) {
-    console.error("Post request error:", error.message);
-    throw error;
+    throw error.response?.data?.errors || error;
   }
 }
-
-export default {
-  getRequest,
-  postRequest,
-};

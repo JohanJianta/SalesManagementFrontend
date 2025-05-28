@@ -1,5 +1,5 @@
-import { saveToStorage } from "../shared/asyncUtil";
-import { postRequest } from "./apiService";
+import { saveToStorage } from "../shared/asyncStorageUtils";
+import { postRequest } from "../services/apiService";
 
 const API_ENDPOINT = "/auth";
 
@@ -10,8 +10,8 @@ export async function register(name: string, email: string, password: string) {
 
     await saveToStorage("token", responseData.token);
     await saveToStorage("user", responseData.payload);
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    throw error[0];
   }
 }
 
@@ -22,12 +22,7 @@ export async function login(email: string, password: string) {
 
     await saveToStorage("token", responseData.token);
     await saveToStorage("user", responseData.payload);
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    throw error[0];
   }
 }
-
-export default {
-  register,
-  login,
-};

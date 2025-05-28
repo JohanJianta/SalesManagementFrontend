@@ -1,8 +1,8 @@
 import Svg, { Image as SvgImage, Rect, G, Text, Circle, Polygon } from "react-native-svg";
 import { View, Alert, ActivityIndicator, SafeAreaView, Dimensions } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
-import BottomNavbar from "@/assets/Component/BottomNavbar";
-import clusterRepo from "./repositories/clusterRepo";
+import { getClusters } from "../src/repositories/clusterRepo";
+import BottomNavbar from "@/src/components/BottomNavbar";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 
@@ -16,7 +16,7 @@ const Maps = () => {
 
   const fetchClusters = async () => {
     try {
-      const clusterResponse = await clusterRepo.getClusters();
+      const clusterResponse = await getClusters();
       setClusters(clusterResponse.clusters);
       setMasterplanUrl(clusterResponse.masterplan_url);
     } catch (error) {
@@ -105,7 +105,7 @@ const Maps = () => {
             contentWidth={baseSize}
             contentHeight={baseSize}
           >
-            <Svg width={baseSize} height={baseSize} viewBox="0 0 1920 1920" preserveAspectRatio="none">
+            <Svg width={baseSize} height={baseSize} viewBox="0 0 1920 1920">
               <SvgImage href={{ uri: masterplanUrl }} x="0" y="0" width={"100%"} height={"100%"} />
               {clusters.map((cluster) =>
                 cluster.image_hotspots?.map((spot) => renderHotspot(spot, cluster.name, cluster.id))

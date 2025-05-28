@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
+import { login } from "../src/repositories/authRepo";
+import React, { useState } from "react";
 import { router } from "expo-router";
-import { login } from "./repositories/authRepo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ export default function LoginPage() {
       await login(email, password);
       router.push("/maps");
     } catch (error: any) {
-      Alert.alert("Login Gagal", error.response?.data?.message || "Periksa email dan password");
+      Alert.alert("Login Gagal", error.message || "Periksa email dan password");
     }
   };
 

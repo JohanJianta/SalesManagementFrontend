@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -11,15 +11,15 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-} from 'react-native';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
+} from "react-native";
+import { ChevronDown, ChevronUp } from "lucide-react-native";
 
 // Enable LayoutAnimation on Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const { width: windowWidth } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get("window");
 
 type UnitDetail = {
   type: string;
@@ -64,15 +64,10 @@ const PropertyCard = ({
     }
   };
 
-
   return (
     <View style={styles.cardContainer}>
-      <View
-        className="bg-[#155e61] rounded-2xl p-3 min-h-[240px]"
-        style={{ width: getCardWidth() }}
-      >
-
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View className="bg-[#155e61] rounded-2xl p-3 min-h-[240px]" style={{ width: getCardWidth() }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Image source={image} style={styles.image} resizeMode="cover" />
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.title}>{title}</Text>
@@ -82,11 +77,7 @@ const PropertyCard = ({
         </View>
 
         <TouchableOpacity onPress={toggleExpand} style={styles.expandButton}>
-          {expanded ? (
-            <ChevronUp size={24} color="#fbfcfc" />
-          ) : (
-            <ChevronDown size={24} color="#fbfcfc" />
-          )}
+          {expanded ? <ChevronUp size={24} color="#fbfcfc" /> : <ChevronDown size={24} color="#fbfcfc" />}
         </TouchableOpacity>
 
         {expanded && (
@@ -113,13 +104,13 @@ const PropertyCard = ({
 
 export default function PropertyCardPage() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0d7377' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0d7377" }}>
       <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
         <View
           style={{
-            flexDirection: windowWidth >= 768 ? 'row' : 'column',
-            justifyContent: windowWidth >= 768 ? 'space-evenly' : 'center',
-            flexWrap: 'wrap',
+            flexDirection: windowWidth >= 768 ? "row" : "column",
+            justifyContent: windowWidth >= 768 ? "space-evenly" : "center",
+            flexWrap: "wrap",
           }}
         >
           {/* Card 1 */}
@@ -128,12 +119,12 @@ export default function PropertyCardPage() {
             priceRange="3~5 miliar"
             totalUnit={3}
             units={3}
-            image={require('../assets/images/azure-apart.jpg')}
+            image={require("../assets/images/azure-apart.jpg")}
             unitDetails={[
-              { type: 'Standar', price: '3 Miliar' },
-              { type: 'Sudut', price: '5 Miliar' },
+              { type: "Standar", price: "3 Miliar" },
+              { type: "Sudut", price: "5 Miliar" },
             ]}
-            availableUnits={['5 (standar)', '6 (standar)', '15 (standar)']}
+            availableUnits={["5 (standar)", "6 (standar)", "15 (standar)"]}
           />
 
           {/* Card 2 */}
@@ -142,17 +133,16 @@ export default function PropertyCardPage() {
             priceRange="3~5 miliar"
             totalUnit={10}
             units={10}
-            image={require('../assets/images/azure-apart.jpg')}
+            image={require("../assets/images/azure-apart.jpg")}
             unitDetails={[
-              { type: 'Standar', price: '3 Miliar' },
-              { type: 'Sudut', price: '5 Miliar' },
+              { type: "Standar", price: "3 Miliar" },
+              { type: "Sudut", price: "5 Miliar" },
             ]}
-            availableUnits={['No. 1', 'No. 2', 'No. 3']}
+            availableUnits={["No. 1", "No. 2", "No. 3"]}
           />
         </View>
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
@@ -160,59 +150,57 @@ const styles = StyleSheet.create({
   cardContainer: {
     paddingHorizontal: 7.3,
     paddingVertical: 7.3,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   card: {
-    backgroundColor: '#155e61',
+    backgroundColor: "#155e61",
     borderRadius: 13,
     padding: 13,
     minHeight: 230,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
 
   image: {
     width: 150,
     height: 150,
-
   },
 
   title: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   price: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
     marginTop: 4,
   },
   unitCount: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
     marginTop: 4,
   },
   expandButton: {
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
     padding: 6,
   },
   expandContent: {
     marginTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#3dd9d8',
+    borderTopColor: "#3dd9d8",
     paddingTop: 10,
   },
   expandTitle: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 20,
     marginBottom: 4,
   },
   expandText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
   },
 });
-

@@ -19,8 +19,3 @@ export async function getFromStorage<T>(key: string): Promise<T | null> {
     throw err;
   }
 }
-
-export default {
-  saveToStorage,
-  getFromStorage,
-};
