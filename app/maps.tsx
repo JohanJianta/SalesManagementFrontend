@@ -1,7 +1,7 @@
 import Svg, { Image as SvgImage, Rect, G, Text, Circle, Polygon } from "react-native-svg";
 import { View, Alert, ActivityIndicator, SafeAreaView, Dimensions } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
-import { getClusters } from "../src/repositories/clusterRepo";
+import { getClusters } from "@/src/repositories/clusterRepo";
 import BottomNavbar from "@/src/components/BottomNavbar";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
