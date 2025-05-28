@@ -43,7 +43,7 @@ export default function RegistrationScreen() {
     try {
       await register(fullName, email, password);
       Alert.alert("Sukses", "Registrasi berhasil");
-      router.push("/maps");
+      router.push("/MapScreen");
     } catch (error: any) {
       Alert.alert("Registrasi Gagal", error.message || "Terjadi kesalahan");
     }

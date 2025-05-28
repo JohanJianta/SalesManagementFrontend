@@ -10,7 +10,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      router.push("/maps");
+      router.push("/MapScreen");
     } catch (error: any) {
       Alert.alert("Login Gagal", error.message || "Periksa email dan password");
     }

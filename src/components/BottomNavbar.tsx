@@ -17,7 +17,7 @@ export default function BottomNavbar({ activeTab = "Map", onNavigate }: Props) {
 
   const handleNavigation = (route: string) => {
     if (route) {
-      router.push(route as `/maps` | `/BookingListScreen` | `/promo`);
+      router.push(route as `/MapScreen` | `/BookingListScreen` | `/promo`);
     }
   };
 
