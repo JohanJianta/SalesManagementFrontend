@@ -1,9 +1,9 @@
 interface ClusterResponse {
   masterplan_url: string;
-  clusters: Cluster[];
+  clusters: BriefCluster[];
 }
 
-interface Cluster {
+interface BriefCluster {
   id: number;
   name: string;
   address: string;
@@ -12,6 +12,15 @@ interface Cluster {
   available_unit: number;
   thumbnail_url: string | null;
   image_hotspots: ImageHotspot[];
+}
+
+interface DetailCluster {
+  name: string;
+  address: string;
+  category: string;
+  is_apartment: boolean;
+  map_url: string | null;
+  products: Product[];
 }
 
 type ImageHotspot =

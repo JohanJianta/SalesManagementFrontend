@@ -10,7 +10,7 @@ interface Props {
 
 export default function BottomNavbar({ activeTab = "Map", onNavigate }: Props) {
   const navItems = [
-    { label: "Map", icon: Map, route: "/maps" },
+    { label: "Map", icon: Map, route: "/MapScreen" },
     { label: "Booking", icon: NotepadText, route: "/BookingListScreen" },
     { label: "Promo", icon: BadgePercent, route: "/promo" },
   ];

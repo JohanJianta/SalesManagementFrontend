@@ -50,7 +50,7 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#166d75] pt-20 px-6 items-center">
+    <View className="flex-1 bg-[#0F7480] pt-20 px-6 items-center">
       <Image source={require("@/assets/images/CPI-logo.png")} className="w-80 h-40 mb-8" resizeMode="contain" />
       <View className="w-full max-w-sm">
         <Text className="text-white text-sm font-medium mb-1">Nama Lengkap</Text>
@@ -93,7 +93,7 @@ export default function RegistrationScreen() {
           onChangeText={setConfirmPassword}
         />
 
-        <TouchableOpacity className="w-full bg-[#0f4a50] py-3 rounded-lg" onPress={handleRegister}>
+        <TouchableOpacity className="w-full bg-[#07484E] py-3 rounded-lg" onPress={handleRegister}>
           <Text className="text-white font-semibold text-base text-center">DAFTAR</Text>
         </TouchableOpacity>
 
