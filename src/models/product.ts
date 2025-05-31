@@ -1,4 +1,4 @@
-interface Product {
+interface BriefProduct {
   id: number;
   name: string;
   default_price: number;

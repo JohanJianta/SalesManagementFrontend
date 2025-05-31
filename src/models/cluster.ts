@@ -20,7 +20,7 @@ interface DetailCluster {
   category: string;
   is_apartment: boolean;
   map_url: string | null;
-  products: Product[];
+  products: BriefProduct[];
 }
 
 type ImageHotspot =

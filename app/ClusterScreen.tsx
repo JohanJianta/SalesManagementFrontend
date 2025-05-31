@@ -1,16 +1,20 @@
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
-import { View, Alert, Text, ActivityIndicator, Image } from "react-native";
+import { View, Alert, Text, ActivityIndicator, Dimensions, Image } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { getClusterById } from "@/src/repositories/clusterRepo";
 import HotspotRenderer from "@/src/components/HotspotRenderer";
 import Svg, { Image as SvgImage } from "react-native-svg";
 import { SafeAreaView, ScrollView } from "react-native";
-import PropertyCard from "./propertycard";
+import PropertyCard from "@/src/components/ProductCard";
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
+const baseSize = SCREEN_HEIGHT >= SCREEN_WIDTH ? SCREEN_HEIGHT : SCREEN_WIDTH;
 
 export default function ClusterScreen() {
   const [cluster, setCluster] = useState<DetailCluster | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [mapSize, setMapSize] = useState<{ width: number; height: number }>({ width: 594, height: 668 });
 
   const { clusterId, clusterName } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -48,16 +52,32 @@ export default function ClusterScreen() {
 
     if (!cluster.map_url) return;
 
+    Image.getSize(
+      cluster.map_url,
+      (width, height) => {
+        setMapSize({ width, height });
+      },
+      (_) => {
+        console.error("Failed to get original image size.");
+        console.error("Default value (594, 668) will be used instead");
+        setMapSize({ width: 594, height: 668 });
+      }
+    );
+
+    if (!mapSize) {
+      return <ActivityIndicator size="large" color="#fff" className="flex-1" />;
+    }
+
     return (
       <ReactNativeZoomableView
-        maxZoom={2.5}
+        maxZoom={1.5}
         minZoom={1}
         zoomStep={0.5}
         initialZoom={1}
-        contentWidth={500}
-        contentHeight={500}
+        contentWidth={402}
+        contentHeight={460}
       >
-        <Svg width={500} height={500} viewBox="0 0 1920 1920">
+        <Svg width={402} height={460} viewBox={`0 0 ${mapSize.width} ${mapSize.height}`}>
           <SvgImage href={{ uri: cluster.map_url }} />
           {cluster.products.map((product) =>
             product.image_hotspots.map((spot) => (
@@ -76,15 +96,18 @@ export default function ClusterScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F7480]">
-      <View className="h-[55%]">
-        <View className="absolute inset-0" pointerEvents="none" />
-        {renderContent()}
-      </View>
+      {/* {renderContent()} */}
 
-      <View className="h-[45%] rounded-t-3xl -mt-6">
+      <View className="flex-1 rounded-t-3xl -mt-6">
         <Text className="text-white text-xl font-bold px-4 pt-4 pb-2">Daftar Produk</Text>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
-          <PropertyCard />
+          {cluster?.products.map((product, index) => (
+            <PropertyCard
+              key={index}
+              product={product}
+              onPress={() => console.log(`Pindah ke Halaman Product ${product.name} (${product.id})`)}
+            />
+          ))}
         </ScrollView>
       </View>
     </SafeAreaView>
