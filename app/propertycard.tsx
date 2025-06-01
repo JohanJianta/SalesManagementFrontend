@@ -13,11 +13,13 @@ import {
   Dimensions,
 } from 'react-native';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-// Enable LayoutAnimation on Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+type RootStackParamList = {
+  Home: undefined;
+  DetailProperty: undefined;
+};
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -44,26 +46,22 @@ const PropertyCard = ({
   availableUnits: string[];
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const toggleExpand = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
 
-  // Determine card width dynamically based on device width (mobile vs tablet)
   const getCardWidth = () => {
     if (windowWidth >= 1024) {
-      // Tablet landscape atau desktop
       return windowWidth / 3.2;
     } else if (windowWidth >= 768) {
-      // Tablet potrait
       return windowWidth / 2.2;
     } else {
-      // Mobile
       return windowWidth * 0.9;
     }
   };
-
 
   return (
     <View style={styles.cardContainer}>
@@ -71,7 +69,6 @@ const PropertyCard = ({
         className="bg-[#155e61] rounded-2xl p-3 min-h-[240px]"
         style={{ width: getCardWidth() }}
       >
-
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={image} style={styles.image} resizeMode="cover" />
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -104,6 +101,13 @@ const PropertyCard = ({
                 No. {unit}
               </Text>
             ))}
+
+            <TouchableOpacity
+              className="bg-teal-700 rounded-xl px-5 py-4 flex-row items-center justify-end w-20 mt-3"
+              onPress={() => navigation.navigate('DetailProperty')}
+            >
+              <Text className="text-white font-bold text-xs">Detail</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -152,7 +156,6 @@ export default function PropertyCardPage() {
         </View>
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
@@ -162,22 +165,10 @@ const styles = StyleSheet.create({
     paddingVertical: 7.3,
     alignItems: 'center',
   },
-
-  card: {
-    backgroundColor: '#155e61',
-    borderRadius: 13,
-    padding: 13,
-    minHeight: 230,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-
   image: {
     width: 150,
     height: 150,
-
   },
-
   title: {
     color: '#fff',
     fontWeight: 'bold',
@@ -215,4 +206,3 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
-

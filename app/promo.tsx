@@ -3,16 +3,6 @@ import { View, Text, Image, ScrollView, TouchableOpacity, useWindowDimensions } 
 import BottomNavbar from '@/assets/Component/BottomNavbar';
 
 
-
-
-
-
-
-
-
-
-
-
 const promos = [
   {
     id: 1,
@@ -41,7 +31,7 @@ const Promo = () => {
 
     <View className="flex-1 bg-teal-600">
       <ScrollView className="p-4">
-        <View className="flex-row flex-wrap justify-center justify-evenly">
+        <View className="flex-row flex-wrap justify-evenly">
   {promos.map((item) => (
     <View
       key={item.id}
