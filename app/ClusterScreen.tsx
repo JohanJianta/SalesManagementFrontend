@@ -1,27 +1,52 @@
+import { View, Alert, Text, ActivityIndicator, Dimensions, Image, ScrollView } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
-import { View, Alert, Text, ActivityIndicator, Dimensions, Image } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { getClusterById } from "@/src/repositories/clusterRepo";
 import HotspotRenderer from "@/src/components/HotspotRenderer";
 import Svg, { Image as SvgImage } from "react-native-svg";
-import { SafeAreaView, ScrollView } from "react-native";
+import CustomHandle from "@/src/components/CustomHandle";
 import PropertyCard from "@/src/components/ProductCard";
+import HotspotMask from "@/src/components/HotspotMask";
+import { SafeAreaView } from "react-native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
-const baseSize = SCREEN_HEIGHT >= SCREEN_WIDTH ? SCREEN_HEIGHT : SCREEN_WIDTH;
+
+interface MapSize {
+  width: number;
+  height: number;
+}
 
 export default function ClusterScreen() {
-  const [cluster, setCluster] = useState<DetailCluster | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [mapSize, setMapSize] = useState<{ width: number; height: number }>({ width: 594, height: 668 });
+  const [cluster, setCluster] = useState<DetailCluster | null>(null);
+  const [mapSize, setMapSize] = useState<MapSize | null>(null);
+  const [expandedProductId, setExpandedProductId] = useState<number | null>(null);
 
   const { clusterId, clusterName } = useLocalSearchParams();
   const navigation = useNavigation();
+  const snapPoints = useMemo(() => ["25%", "50%", "90%", "100%"], []);
 
   useEffect(() => {
     fetchCluster();
   }, []);
+
+  useEffect(() => {
+    if (!cluster?.map_url) return;
+
+    Image.getSize(
+      cluster.map_url,
+      (width, height) => {
+        setMapSize({ width, height });
+      },
+      () => {
+        console.error("Failed to get original image size.");
+        console.error("Default value (594, 668) will be used instead");
+        setMapSize({ width: 594, height: 668 });
+      }
+    );
+  }, [cluster?.map_url]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -41,75 +66,94 @@ export default function ClusterScreen() {
     }
   };
 
-  const handleProductPress = (productName: string) => {
-    Alert.alert("Product", `Kamu memilih ${productName}`);
+  const handleProductPress = (productId: number) => {
+    setExpandedProductId((prevId) => (prevId === productId ? null : productId));
   };
 
-  const renderContent = () => {
-    if (loading || !cluster) {
-      return <ActivityIndicator size="large" color="#fff" className="flex-1" />;
-    }
-
-    if (!cluster.map_url) return;
-
-    Image.getSize(
-      cluster.map_url,
-      (width, height) => {
-        setMapSize({ width, height });
-      },
-      (_) => {
-        console.error("Failed to get original image size.");
-        console.error("Default value (594, 668) will be used instead");
-        setMapSize({ width: 594, height: 668 });
-      }
-    );
+  const renderMap = () => {
+    if (!cluster?.map_url) return;
 
     if (!mapSize) {
-      return <ActivityIndicator size="large" color="#fff" className="flex-1" />;
+      return (
+        <View className="w-full h-[65%] items-center justify-center">
+          <ActivityIndicator size="large" color="#fff" className="flex-1" />
+        </View>
+      );
+    }
+
+    const mapRatio = mapSize.width / mapSize.height;
+    const minHeight = SCREEN_HEIGHT * 0.65;
+
+    let displayWidth = SCREEN_WIDTH;
+    let displayHeight = displayWidth / mapRatio;
+
+    if (displayHeight < minHeight) {
+      displayHeight = minHeight;
+      displayWidth = displayHeight * mapRatio;
     }
 
     return (
-      <ReactNativeZoomableView
-        maxZoom={1.5}
-        minZoom={1}
-        zoomStep={0.5}
-        initialZoom={1}
-        contentWidth={402}
-        contentHeight={460}
-      >
-        <Svg width={402} height={460} viewBox={`0 0 ${mapSize.width} ${mapSize.height}`}>
-          <SvgImage href={{ uri: cluster.map_url }} />
-          {cluster.products.map((product) =>
-            product.image_hotspots.map((spot) => (
-              <HotspotRenderer
-                key={product.id}
-                spot={spot}
-                name={product.name}
-                onPress={() => handleProductPress(product.name)}
+      <View style={{ height: displayHeight }} className="min-h-[400px] max-h-[700px]">
+        <ReactNativeZoomableView
+          maxZoom={2.5}
+          minZoom={1}
+          zoomStep={0.5}
+          initialZoom={1}
+          contentWidth={displayWidth}
+          contentHeight={displayHeight}
+        >
+          <Svg width={displayWidth} height={displayHeight} viewBox={`0 0 ${mapSize.width} ${mapSize.height}`}>
+            <SvgImage href={{ uri: cluster.map_url }} />
+
+            {expandedProductId && (
+              <HotspotMask
+                maskId="multi-hole-mask"
+                hotspots={cluster.products.find((p) => p.id === expandedProductId)?.image_hotspots || []}
               />
-            ))
-          )}
-        </Svg>
-      </ReactNativeZoomableView>
+            )}
+
+            {cluster.products.map((product) =>
+              product.image_hotspots.map((spot, index) => (
+                <HotspotRenderer key={index} spot={spot} onPress={() => handleProductPress(product.id)} />
+              ))
+            )}
+          </Svg>
+        </ReactNativeZoomableView>
+      </View>
     );
   };
 
+  const renderProductList = () => (
+    <View className="flex-1 gap-4 p-6">
+      <Text className="text-white text-xl font-bold">Daftar Produk</Text>
+      <View className="flex-1 gap-4 flex-row flex-wrap justify-center">
+        {cluster?.products.map((product, index) => (
+          <PropertyCard
+            key={index}
+            product={product}
+            expanded={expandedProductId === product.id}
+            onToggle={() => handleProductPress(product.id)}
+            onPress={() => console.log(`Pindah ke Halaman Product ${product.name} (${product.id})`)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-[#0F7480]">
-      {/* {renderContent()} */}
-
-      <View className="flex-1 rounded-t-3xl -mt-6">
-        <Text className="text-white text-xl font-bold px-4 pt-4 pb-2">Daftar Produk</Text>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
-          {cluster?.products.map((product, index) => (
-            <PropertyCard
-              key={index}
-              product={product}
-              onPress={() => console.log(`Pindah ke Halaman Product ${product.name} (${product.id})`)}
-            />
-          ))}
-        </ScrollView>
-      </View>
+      {loading || !cluster ? (
+        <ActivityIndicator size="large" color="#fff" className="flex-1" />
+      ) : cluster.map_url !== null ? (
+        <>
+          {renderMap()}
+          <BottomSheet index={0} snapPoints={snapPoints} handleComponent={CustomHandle}>
+            <BottomSheetScrollView className="bg-[#0F7480]">{renderProductList()}</BottomSheetScrollView>
+          </BottomSheet>
+        </>
+      ) : (
+        <ScrollView className="bg-[#0F7480]">{renderProductList()}</ScrollView>
+      )}
     </SafeAreaView>
   );
 }

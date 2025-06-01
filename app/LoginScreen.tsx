@@ -18,7 +18,11 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 bg-[#0F7480] pt-20 px-6 items-center">
-      <Image source={require("@/assets/images/CPI-logo.png")} className="w-80 h-40 mb-8" resizeMode="contain" />
+      <Image
+        source={require("@/assets/images/CPI-logo.png")}
+        className="w-4/5 h-2/5 max-w-[500px] max-h-[150px] mb-8"
+        resizeMode="contain"
+      />
       <View className="w-full max-w-sm">
         <Text className="text-white text-sm font-medium mb-1">Email</Text>
         <TextInput

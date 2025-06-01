@@ -3,7 +3,7 @@ import React from "react";
 
 interface Props {
   spot: ImageHotspot;
-  name: string;
+  name?: string;
   onPress: () => void;
 }
 
@@ -15,7 +15,8 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
   const MIN_TEXT_RECT_WIDTH = 80;
   const HORIZONTAL_PADDING = 20;
 
-  const estimatedTextWidth = name.length * (FONT_SIZE * 0.5);
+  const estimatedTextWidth = name?.length ? name.length * (FONT_SIZE * 0.5) : 0;
+
   const dynamicTextRectWidth = Math.max(MIN_TEXT_RECT_WIDTH, estimatedTextWidth + 2 * HORIZONTAL_PADDING);
 
   let centerX: number;
@@ -28,25 +29,29 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       return (
         <G onPressOut={onPress}>
           <Rect {...spot} fill="transparent" />
-          <Rect
-            x={centerX - dynamicTextRectWidth / 2}
-            y={centerY - TEXT_RECT_HEIGHT / 2}
-            rx={10}
-            ry={10}
-            width={dynamicTextRectWidth}
-            height={TEXT_RECT_HEIGHT}
-            fill="#0F7480"
-          />
-          <SvgText
-            x={centerX}
-            y={centerY + VERTICAL_TEXT_OFFSET}
-            fontSize={FONT_SIZE}
-            fontWeight="bold"
-            textAnchor="middle"
-            fill="white"
-          >
-            {name}
-          </SvgText>
+          {name && (
+            <>
+              <Rect
+                x={centerX - dynamicTextRectWidth / 2}
+                y={centerY - TEXT_RECT_HEIGHT / 2}
+                rx={10}
+                ry={10}
+                width={dynamicTextRectWidth}
+                height={TEXT_RECT_HEIGHT}
+                fill="#0F7480"
+              />
+              <SvgText
+                x={centerX}
+                y={centerY + VERTICAL_TEXT_OFFSET}
+                fontSize={FONT_SIZE}
+                fontWeight="bold"
+                textAnchor="middle"
+                fill="white"
+              >
+                {name}
+              </SvgText>
+            </>
+          )}
         </G>
       );
 
@@ -56,25 +61,29 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       return (
         <G onPressOut={onPress}>
           <Circle cx={spot.x} cy={spot.y} r={spot.radius} fill="transparent" />
-          <Rect
-            x={centerX - dynamicTextRectWidth / 2}
-            y={centerY - TEXT_RECT_HEIGHT / 2}
-            rx={10}
-            ry={10}
-            width={dynamicTextRectWidth}
-            height={TEXT_RECT_HEIGHT}
-            fill="#0F7480"
-          />
-          <SvgText
-            x={centerX}
-            y={centerY + VERTICAL_TEXT_OFFSET}
-            fontSize={FONT_SIZE}
-            fontWeight="bold"
-            textAnchor="middle"
-            fill="white"
-          >
-            {name}
-          </SvgText>
+          {name && (
+            <>
+              <Rect
+                x={centerX - dynamicTextRectWidth / 2}
+                y={centerY - TEXT_RECT_HEIGHT / 2}
+                rx={10}
+                ry={10}
+                width={dynamicTextRectWidth}
+                height={TEXT_RECT_HEIGHT}
+                fill="#0F7480"
+              />
+              <SvgText
+                x={centerX}
+                y={centerY + VERTICAL_TEXT_OFFSET}
+                fontSize={FONT_SIZE}
+                fontWeight="bold"
+                textAnchor="middle"
+                fill="white"
+              >
+                {name}
+              </SvgText>
+            </>
+          )}
         </G>
       );
 
@@ -98,25 +107,29 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       return (
         <G onPressOut={onPress}>
           <Polygon points={pointsStr} fill="transparent" />
-          <Rect
-            x={centerX - dynamicTextRectWidth / 2}
-            y={centerY - TEXT_RECT_HEIGHT / 2}
-            rx={10}
-            ry={10}
-            width={dynamicTextRectWidth}
-            height={TEXT_RECT_HEIGHT}
-            fill="#0F7480"
-          />
-          <SvgText
-            x={centerX}
-            y={centerY + VERTICAL_TEXT_OFFSET}
-            fontSize={FONT_SIZE}
-            fontWeight="bold"
-            textAnchor="middle"
-            fill="white"
-          >
-            {name}
-          </SvgText>
+          {name && (
+            <>
+              <Rect
+                x={centerX - dynamicTextRectWidth / 2}
+                y={centerY - TEXT_RECT_HEIGHT / 2}
+                rx={10}
+                ry={10}
+                width={dynamicTextRectWidth}
+                height={TEXT_RECT_HEIGHT}
+                fill="#0F7480"
+              />
+              <SvgText
+                x={centerX}
+                y={centerY + VERTICAL_TEXT_OFFSET}
+                fontSize={FONT_SIZE}
+                fontWeight="bold"
+                textAnchor="middle"
+                fill="white"
+              >
+                {name}
+              </SvgText>
+            </>
+          )}
         </G>
       );
 
