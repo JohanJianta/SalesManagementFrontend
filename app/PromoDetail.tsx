@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { ArrowLeftIcon } from 'react-native-heroicons/solid';
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { ArrowLeftIcon } from "react-native-heroicons/solid";
+import { getFromStorage } from "@/src/shared/asyncStorageUtils";
 
 interface PromoDetailData {
   cluster_id: number;
@@ -31,9 +25,9 @@ const PromoDetail: React.FC = () => {
   useEffect(() => {
     const fetchPromoDetail = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
+        const token = await getFromStorage("token");
         if (!token) {
-          console.error('Token tidak ditemukan.');
+          console.error("Token tidak ditemukan.");
           setLoading(false);
           return;
         }
@@ -41,13 +35,13 @@ const PromoDetail: React.FC = () => {
         const response = await fetch(`http://18.139.110.33:3000/api/promotions/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
           const err = await response.text();
-          console.error('Gagal mengambil detail promo:', err);
+          console.error("Gagal mengambil detail promo:", err);
           setLoading(false);
           return;
         }
@@ -55,7 +49,7 @@ const PromoDetail: React.FC = () => {
         const data = await response.json();
         setPromo(data);
       } catch (error) {
-        console.error('Terjadi kesalahan saat mengambil promo:', error);
+        console.error("Terjadi kesalahan saat mengambil promo:", error);
       } finally {
         setLoading(false);
       }
@@ -91,29 +85,28 @@ const PromoDetail: React.FC = () => {
       </TouchableOpacity>
 
       <Image
-        source={{ uri: promo.thumbnail_url || 'https://via.placeholder.com/300x200?text=No+Image' }}
-        style={{ width: '100%', height: 200, borderRadius: 12 }}
+        source={{ uri: promo.thumbnail_url || "https://via.placeholder.com/300x200?text=No+Image" }}
+        style={{ width: "100%", height: 200, borderRadius: 12 }}
         resizeMode="cover"
       />
 
       <Text className="text-xl font-bold mt-4 text-black">{promo.title}</Text>
 
       <Text className="text-sm text-gray-500 mt-1">
-        {new Date(promo.created_at).toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-        })} -{' '}
-        {new Date(promo.expired_at).toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
+        {new Date(promo.created_at).toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })}{" "}
+        -{" "}
+        {new Date(promo.expired_at).toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
         })}
       </Text>
 
-      <Text className="text-base mt-4 leading-relaxed text-black">
-        {promo.content || 'Tidak ada deskripsi promo.'}
-      </Text>
+      <Text className="text-base mt-4 leading-relaxed text-black">{promo.content || "Tidak ada deskripsi promo."}</Text>
     </ScrollView>
   );
 };
