@@ -26,7 +26,7 @@ const Promo = () => {
   return (
     <View className="flex-1 bg-teal-600">
       <ScrollView className="p-4">
-        <View className="flex-row flex-wrap justify-center justify-evenly">
+        <View className="flex-row flex-wrap justify-center">
           {promos.map((item) => (
             <View
               key={item.id}
