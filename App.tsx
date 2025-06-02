@@ -10,6 +10,7 @@ import AddPromo from './app/addpromo'; // ✅ Tambahkan ini
 import BottomNavbar from './assets/Component/BottomNavbar';
 import CombinedScreen from './app/CombinedScreen';
 import DetailProperty from './app/DetailProperty';
+import PromoDetail from './app/PromoDetail';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
         <Stack.Screen name="UploadPDF" component={AddPromo} />
         <Stack.Screen name="CombinedScreen" component={CombinedScreen} /> 
         <Stack.Screen name="DetailProperty" component={DetailProperty} />
+        <Stack.Screen name="PromoDetail" component={PromoDetail} />
       </Stack.Navigator>
 
       <View className="flex-1">
