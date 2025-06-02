@@ -1,38 +1,61 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import { router } from 'expo-router';
-import axios from 'axios';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
+import { register } from "@/src/repositories/authRepo";
+import React, { useState } from "react";
+import { router } from "expo-router";
 
-export default function RegistrationPage() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+export default function RegistrationScreen() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Password dan konfirmasi harus sama');
+    const inputName = fullName.trim();
+    const inputEmail = email.trim();
+    const inputPass = password.trim();
+    const inputConfirmPass = confirmPassword.trim();
+
+    if (!inputName) {
+      Alert.alert("Error", "Nama tidak boleh kosong");
+      return;
+    }
+
+    if (!inputEmail || !isValidEmail(inputEmail)) {
+      Alert.alert("Error", "Email tidak valid");
+      return;
+    }
+
+    if (!inputPass || inputPass.length < 6) {
+      Alert.alert("Error", "Password minimal berisikan 6 karakter");
+      return;
+    }
+
+    if (inputPass !== inputConfirmPass) {
+      Alert.alert("Error", "Konfirmasi password tidak sama");
       return;
     }
 
     try {
-      await axios.post('http://18.139.110.33:3000/api/register', {
-        name: fullName,
-        email,
-        password
-      });
-
-      Alert.alert('Sukses', 'Registrasi berhasil, silakan login');
-      router.push('/loginpage');
+      await register(fullName, email, password);
+      Alert.alert("Sukses", "Registrasi berhasil");
+      router.push("/MapScreen");
     } catch (error: any) {
-      console.error(error);
-      Alert.alert('Registrasi gagal', error.response?.data?.message || 'Terjadi kesalahan');
+      Alert.alert("Registrasi Gagal", error.message || "Terjadi kesalahan");
     }
   };
 
   return (
-    <View className="flex-1 bg-[#166d75] pt-20 px-6 items-center">
-      <Image source={require('../assets/images/CPI-logo.png')} className="w-80 h-40 mb-8" resizeMode="contain" />
+    <View className="flex-1 bg-[#0F7480] pt-20 px-6 items-center">
+      <Image
+        source={require("@/assets/images/CPI-logo.png")}
+        className="w-4/5 h-2/5 max-w-[500px] max-h-[150px] mb-8"
+        resizeMode="contain"
+      />
       <View className="w-full max-w-sm">
         <Text className="text-white text-sm font-medium mb-1">Nama Lengkap</Text>
         <TextInput
@@ -74,11 +97,11 @@ export default function RegistrationPage() {
           onChangeText={setConfirmPassword}
         />
 
-        <TouchableOpacity className="w-full bg-[#0f4a50] py-3 rounded-lg" onPress={handleRegister}>
+        <TouchableOpacity className="w-full bg-[#07484E] py-3 rounded-lg" onPress={handleRegister}>
           <Text className="text-white font-semibold text-base text-center">DAFTAR</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="mt-4" onPress={() => router.push('/loginpage')}>
+        <TouchableOpacity className="mt-4" onPress={() => router.push("/LoginScreen")}>
           <Text className="text-white text-sm text-center">
             Sudah punya akun? <Text className="font-semibold">Login</Text>
           </Text>
