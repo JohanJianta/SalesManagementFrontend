@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavbar from '@/src/components/BottomNavbar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
@@ -36,53 +37,77 @@ const Promo: React.FC = () => {
 
   const [promos, setPromos] = useState<Promotion[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchPromos = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        console.log('TOKEN:', token);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-        if (!token) {
-          setError('Token tidak ditemukan. Silakan login terlebih dahulu.');
-          return;
+      const fetchPromos = async () => {
+        setLoading(true);
+        try {
+          const token = await AsyncStorage.getItem('token');
+          console.log('TOKEN SAAT AMBIL:', token);
+
+          if (!token) {
+            setError('Token tidak ditemukan. Silakan login terlebih dahulu.');
+            setLoading(false);
+            return;
+          }
+
+          const response = await fetch('http://18.139.110.33:3000/api/promotions', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Gagal mengambil data promo (${response.status}):`, errorText);
+            setError(`Gagal mengambil data promo (${response.status})`);
+            setLoading(false);
+            return;
+          }
+
+          const data = await response.json();
+
+          if (!Array.isArray(data)) {
+            console.error('Data dari API bukan array:', data);
+            setError('Format data dari server tidak valid.');
+            setLoading(false);
+            return;
+          }
+
+          if (isActive) {
+            setPromos(data);
+            setError(null);
+          }
+        } catch (error) {
+          console.error('Error saat mengambil promo:', error);
+          if (isActive) {
+            setError('Terjadi kesalahan saat mengambil data.');
+          }
+        } finally {
+          setLoading(false);
         }
+      };
 
-        const response = await fetch('http://18.139.110.33:3000/api/promotions', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+      fetchPromos();
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Gagal mengambil data promo (${response.status}):`, errorText);
-          setError(`Gagal mengambil data promo (${response.status})`);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error('Data dari API bukan array:', data);
-          setError('Format data dari server tidak valid.');
-          return;
-        }
-
-        setPromos(data);
-      } catch (error) {
-        console.error('Error saat mengambil promo:', error);
-        setError('Terjadi kesalahan saat mengambil data.');
-      }
-    };
-
-    fetchPromos();
-  }, []);
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-teal-600">
       <ScrollView className="p-4">
+        {loading && (
+          <ActivityIndicator size="large" color="#ffffff" className="mb-4" />
+        )}
+
         {error ? (
           <Text className="text-white text-center">{error}</Text>
         ) : (
@@ -95,7 +120,11 @@ const Promo: React.FC = () => {
                 }`}
               >
                 <Image
-                  source={{ uri: item.thumbnail_url }}
+                  source={{
+                    uri:
+                      item.thumbnail_url ||
+                      'https://via.placeholder.com/300x200.png?text=No+Image',
+                  }}
                   resizeMode="cover"
                   style={{
                     width: isLargeScreen ? '135%' : '100%',
@@ -106,7 +135,11 @@ const Promo: React.FC = () => {
                 <View className="p-2">
                   <Text className="text-sm font-semibold">{item.title}</Text>
                   <Text className="text-xs text-gray-500">
-                    {new Date(item.created_at).toLocaleDateString()}
+                    {new Date(item.created_at).toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
                   </Text>
                 </View>
                 <TouchableOpacity
