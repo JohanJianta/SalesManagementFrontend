@@ -1,15 +1,14 @@
-import { View, Alert, Text, ActivityIndicator, Dimensions, Image, ScrollView } from "react-native";
+import { View, Alert, Text, ActivityIndicator, Dimensions, Image, ScrollView, SafeAreaView } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { getClusterById } from "@/src/repositories/clusterRepo";
 import HotspotRenderer from "@/src/components/HotspotRenderer";
 import Svg, { Image as SvgImage } from "react-native-svg";
 import CustomHandle from "@/src/components/CustomHandle";
 import PropertyCard from "@/src/components/ProductCard";
 import HotspotMask from "@/src/components/HotspotMask";
-import { SafeAreaView } from "react-native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -133,7 +132,15 @@ export default function ClusterScreen() {
             product={product}
             expanded={expandedProductId === product.id}
             onToggle={() => handleProductPress(product.id)}
-            onPress={() => console.log(`Pindah ke Halaman Product ${product.name} (${product.id})`)}
+            onPress={() =>
+              router.push({
+                pathname: "/DetailProperty",
+                params: {
+                  productId: product.id,
+                  propertyName: `${cluster.name} - ${product.name}`,
+                },
+              })
+            }
           />
         ))}
       </View>
@@ -152,7 +159,7 @@ export default function ClusterScreen() {
           </BottomSheet>
         </>
       ) : (
-        <ScrollView className="bg-[#0F7480]">{renderProductList()}</ScrollView>
+        <ScrollView>{renderProductList()}</ScrollView>
       )}
     </SafeAreaView>
   );
