@@ -1,10 +1,10 @@
-import * as storageUtils from "../../src/shared/asyncStorageUtils";
-import { register, login } from "../../src/repositories/authRepo";
-import * as apiService from "../../src/services/apiService";
+import * as storageUtils from "@/src/shared/asyncStorageUtils";
+import { register, login } from "@/src/repositories/authRepo";
+import * as apiService from "@/src/services/apiService";
 
 // Mocking dependencies to isolate unit tests from external systems
-jest.mock("../../src/services/apiService");
-jest.mock("../../src/shared/asyncStorageUtils");
+jest.mock("@/src/services/apiService");
+jest.mock("@/src/shared/asyncStorageUtils");
 
 const mockedPostRequest = apiService.postRequest as jest.Mock;
 
@@ -20,12 +20,12 @@ describe("Test authRepo", () => {
      *          and stores the token and user data to async storage.
      *
      * Expected Outcome:
-     * - postRequest is called with "/auth/register" and the correct data
-     * - saveToStorage is called twice with token and user
+     * - postRequest() called with correct credentials
+     * - saveToStorage() stores token and user data
      *
      * Assumptions:
-     * - postRequest returns an object with token and payload
-     * - saveToStorage is correctly mocked
+     * - postRequest() returns an object with token and payload
+     * - saveToStorage() is properly mocked
      */
     it("calls postRequest and saves token and user", async () => {
       const mockResponse = {
@@ -53,31 +53,33 @@ describe("Test authRepo", () => {
      * Purpose: Ensure register() correctly throws the first error when postRequest fails.
      *
      * Expected Outcome:
-     * - The promise rejects with the first error string.
+     * - The function rejects with the first error object.
      *
      * Assumptions:
-     * - postRequest throws an array of error strings (e.g., ["Registration failed"])
+     * - postRequest() throws an array of error objects
      */
     it("throws first error if register fails", async () => {
-      mockedPostRequest.mockRejectedValue(["Registration failed"]);
+      mockedPostRequest.mockRejectedValue([{ field: "authentication", message: "User tidak valid" }]);
 
-      await expect(register("User", "email", "pass")).rejects.toBe("Registration failed");
+      await expect(register("User", "email", "pass")).rejects.toEqual({
+        field: "authentication",
+        message: "User tidak valid",
+      });
     });
   });
 
   describe("/auth/login endpoint", () => {
     /**
-     * Purpose: Verify that login() behaves the same as register():
-     * - Calls postRequest with the login payload
-     * - Saves the token and user payload to async storage
+     * Purpose: Ensure login() calls postRequest with correct payload
+     *          and stores the token and user data to async storage.
      *
      * Expected Outcome:
-     * - postRequest called with correct credentials
-     * - saveToStorage stores token and user data
+     * - postRequest() called with correct credentials
+     * - saveToStorage() stores token and user data
      *
      * Assumptions:
-     * - postRequest returns a valid response
-     * - saveToStorage is properly mocked
+     * - postRequest() returns an object with token and payload
+     * - saveToStorage() is properly mocked
      */
     it("calls postRequest and saves token and user", async () => {
       const mockResponse = {
@@ -102,18 +104,21 @@ describe("Test authRepo", () => {
     });
 
     /**
-     * Purpose: Ensure login() handles errors properly when postRequest fails
+     * Purpose: Ensure login() correctly throws the first error when postRequest fails.
      *
      * Expected Outcome:
-     * - The function throws the first string from the rejected array
+     * - The function rejects with the first error object.
      *
      * Assumptions:
-     * - postRequest throws an array of strings as errors
+     * - postRequest() throws an array of error objects
      */
     it("throws first error if login fails", async () => {
-      mockedPostRequest.mockRejectedValue(["Invalid credentials"]);
+      mockedPostRequest.mockRejectedValue([{ field: "authentication", message: "Invalid credentials" }]);
 
-      await expect(login("fail@example.com", "wrongpass")).rejects.toBe("Invalid credentials");
+      await expect(login("fail@example.com", "wrongpass")).rejects.toEqual({
+        field: "authentication",
+        message: "Invalid credentials",
+      });
     });
   });
 });

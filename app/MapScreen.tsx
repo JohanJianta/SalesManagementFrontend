@@ -55,13 +55,14 @@ export default function MapScreen() {
             contentHeight={baseSize}
           >
             <Svg width={baseSize} height={baseSize} viewBox="0 0 1920 1920">
-              <SvgImage href={{ uri: masterplanUrl }} />
+              <SvgImage testID="masterplan-svg" href={{ uri: masterplanUrl }} />
               {clusters.map((cluster) =>
-                cluster.image_hotspots.map((spot) => (
+                cluster.image_hotspots.map((spot, index) => (
                   <HotspotRenderer
-                    key={cluster.id}
+                    key={index}
                     spot={spot}
                     name={cluster.name}
+                    testID="hotspot-button"
                     onPress={() => handleClusterPress(cluster)}
                   />
                 ))
@@ -71,7 +72,7 @@ export default function MapScreen() {
         )}
       </View>
 
-      <CustomModal isOpen={modalOpen}>
+      <CustomModal isOpen={modalOpen} testID="cluster-modal">
         <View className="w-full p-6 rounded-xl gap-y-4 bg-white">
           <TouchableOpacity className="absolute right-4 top-4" onPress={() => setModalOpen(false)}>
             <X size={24} color="#07484E" />
@@ -92,6 +93,7 @@ export default function MapScreen() {
 
           <TouchableOpacity
             className="bg-[#07484E] py-3 px-6 rounded-lg mt-4"
+            testID="navigation-button"
             onPress={() => {
               setModalOpen(false);
               router.push({

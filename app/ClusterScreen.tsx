@@ -75,7 +75,7 @@ export default function ClusterScreen() {
     if (!mapSize) {
       return (
         <View className="w-full h-[65%] items-center justify-center">
-          <ActivityIndicator size="large" color="#fff" className="flex-1" />
+          <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
         </View>
       );
     }
@@ -102,7 +102,7 @@ export default function ClusterScreen() {
           contentHeight={displayHeight}
         >
           <Svg width={displayWidth} height={displayHeight} viewBox={`0 0 ${mapSize.width} ${mapSize.height}`}>
-            <SvgImage href={{ uri: cluster.map_url }} />
+            <SvgImage testID="cluster-map-svg" href={{ uri: cluster.map_url }} />
 
             {expandedProductId && (
               <HotspotMask
@@ -113,7 +113,12 @@ export default function ClusterScreen() {
 
             {cluster.products.map((product) =>
               product.image_hotspots.map((spot, index) => (
-                <HotspotRenderer key={index} spot={spot} onPress={() => handleProductPress(product.id)} />
+                <HotspotRenderer
+                  key={index}
+                  spot={spot}
+                  testID="hotspot-button"
+                  onPress={() => handleProductPress(product.id)}
+                />
               ))
             )}
           </Svg>
@@ -150,16 +155,18 @@ export default function ClusterScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0F7480]">
       {loading || !cluster ? (
-        <ActivityIndicator size="large" color="#fff" className="flex-1" />
+        <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
       ) : cluster.map_url !== null ? (
         <>
           {renderMap()}
           <BottomSheet index={0} snapPoints={snapPoints} handleComponent={CustomHandle}>
-            <BottomSheetScrollView className="bg-[#0F7480]">{renderProductList()}</BottomSheetScrollView>
+            <BottomSheetScrollView testID="bottomsheet-scrollview" className="bg-[#0F7480]">
+              {renderProductList()}
+            </BottomSheetScrollView>
           </BottomSheet>
         </>
       ) : (
-        <ScrollView>{renderProductList()}</ScrollView>
+        <ScrollView testID="default-scrollview">{renderProductList()}</ScrollView>
       )}
     </SafeAreaView>
   );

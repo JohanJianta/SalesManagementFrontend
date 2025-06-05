@@ -1,73 +1,76 @@
+import { fireEvent, render, waitFor, within } from "@testing-library/react-native";
+import * as clusterRepo from "@/src/repositories/clusterRepo";
+import MapScreen from "@/app/MapScreen";
 import { Alert } from "react-native";
-import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
-import MapScreen from "../../app/MapScreen";
-import * as clusterRepo from "../../src/repositories/clusterRepo";
 
-// Mock the clusterRepo module
-jest.mock("../../src/repositories/clusterRepo");
+// Mock the clusterRepo module to isolate network logic from UI rendering
+jest.mock("@/src/repositories/clusterRepo");
 
-// Optionally mock HotspotRenderer for simplicity
-jest.mock("@/src/components/HotspotRenderer", () => {
-  const { Text } = require("react-native");
-  return ({ name, onPress }: any) => <Text onPress={onPress}>{name}</Text>;
-});
+// Sample mocked response from clusterRepo.getClusters()
+const mockClusterResponse = {
+  masterplan_url: "http://masterplan.jpg",
+  clusters: [
+    {
+      id: 1,
+      name: "Cluster A",
+      address: "Address A",
+      category: "residential",
+      is_apartment: false,
+      available_unit: 5,
+      thumbnail_url: "http://thumbnail.jpg",
+      image_hotspots: [
+        {
+          shape: "rectangle" as const,
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100,
+        },
+      ],
+    },
+  ],
+};
 
 describe("Test MapScreen", () => {
+  // Reset all mock function calls and state before each test to ensure clean state
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  // Purpose: Verify the loading indicator shows while data is being fetched
-  // Expected Outcome: <ActivityIndicator> is rendered when `loading` is true
-  // Prerequisites: Mocks should return a Promise that doesn't resolve immediately
   it("displays loading indicator while fetching clusters", async () => {
+    /**
+     * Purpose: Verify that a loading spinner appears while data is being fetched.
+     * Expected Outcome: An activity indicator with testID `activity-indicator` is rendered.
+     * Assumptions: The fetch is intentionally stalled using a never-resolving Promise.
+     */
     jest.spyOn(clusterRepo, "getClusters").mockImplementation(() => new Promise(() => {}));
 
     const { getByTestId } = render(<MapScreen />);
     expect(getByTestId("activity-indicator")).toBeTruthy();
   });
 
-  // Purpose: Ensure clusters and masterplan image are rendered after data fetch
-  // Expected Outcome: SVG image and Hotspot components should appear
-  // Prerequisites: Mock API returns valid cluster data
   it("renders masterplan and hotspots after successful fetch", async () => {
-    const mockClusters = [
-      {
-        id: 1,
-        name: "Cluster A",
-        address: "Address A",
-        category: "residential",
-        is_apartment: false,
-        available_unit: 5,
-        thumbnail_url: "http://thumbnail.jpg",
-        image_hotspots: [
-          {
-            shape: "rectangle" as "rectangle", // WTF IS THIS??!! WHYY??!!
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
-          },
-        ],
-      },
-    ];
+    /**
+     * Purpose: Ensure that the masterplan image and hotspots are rendered after a successful fetch.
+     * Expected Outcome: Components with testIDs `masterplan-svg` and `hotspot-button` should be found.
+     * Assumptions: `getClusters()` resolves with valid cluster data including hotspot coordinates.
+     */
+    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue(mockClusterResponse);
 
-    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue({
-      clusters: mockClusters,
-      masterplan_url: "http://masterplan.jpg",
-    });
-
-    const { findByText } = render(<MapScreen />);
-    expect(await findByText("Cluster A")).toBeTruthy();
+    const { findByTestId } = render(<MapScreen />);
+    expect(await findByTestId("masterplan-svg")).toBeTruthy();
+    expect(await findByTestId("hotspot-button")).toBeTruthy();
   });
 
-  // Purpose: Ensure error alert is shown when fetchClusters fails
-  // Expected Outcome: Alert with error message is triggered
-  // Prerequisites: getClusters rejects with an error
-  it("shows error alert if fetching clusters fails", async () => {
+  it("shows error alert when fetching clusters fails", async () => {
+    /**
+     * Purpose: Confirm that an error message is shown when cluster fetch fails.
+     * Expected Outcome: `Alert.alert()` is called with "Error" and the error message.
+     * Assumptions: `getClusters()` rejects with an error object containing a `message` field.
+     */
     const alertSpy = jest.spyOn(Alert, "alert");
-    jest.spyOn(clusterRepo, "getClusters").mockRejectedValue(new Error("Fetch error"));
+    jest.spyOn(clusterRepo, "getClusters").mockRejectedValue({ message: "Fetch error" });
 
     render(<MapScreen />);
     await waitFor(() => {
@@ -75,87 +78,46 @@ describe("Test MapScreen", () => {
     });
   });
 
-  // Purpose: Ensure modal opens with correct cluster data when hotspot is pressed
-  // Expected Outcome: Modal content appears with cluster details
-  // Prerequisites: Mock cluster data with hotspots
   it("opens modal with cluster info on hotspot press", async () => {
-    const mockClusters = [
-      {
-        id: 1,
-        name: "Cluster B",
-        address: "Address B",
-        category: "commercial",
-        is_apartment: false,
-        available_unit: 10,
-        thumbnail_url: "http://thumbnail.jpg",
-        image_hotspots: [
-          {
-            shape: "rectangle" as "rectangle", // WTF IS THIS??!! WHYY??!!
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
-          },
-        ],
-      },
-    ];
+    /**
+     * Purpose: Ensure that pressing a hotspot displays the modal with correct cluster information.
+     * Expected Outcome: Modal shows name, category, address, and available units of the cluster.
+     * Assumptions: The modal is conditionally rendered and is shown only after hotspot is pressed.
+     */
+    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue(mockClusterResponse);
 
-    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue({
-      clusters: mockClusters,
-      masterplan_url: "http://test.image",
-    });
-
-    const { findByText, getByText } = render(<MapScreen />);
-    const hotspot = await findByText("Cluster B");
+    const { findByTestId } = render(<MapScreen />);
+    const hotspot = await findByTestId("hotspot-button");
     fireEvent.press(hotspot);
 
-    expect(getByText("Cluster B")).toBeTruthy();
-    expect(getByText("Kategori: Komersial")).toBeTruthy();
-    expect(getByText("Alamat: Address B")).toBeTruthy();
-    expect(getByText("Unit Tersedia: 10")).toBeTruthy();
+    const modal = await findByTestId("cluster-modal");
+    const modalScope = within(modal);
+
+    expect(modalScope.getByText("Cluster A")).toBeTruthy();
+    expect(modalScope.getByText("Kategori: Residensial")).toBeTruthy();
+    expect(modalScope.getByText("Alamat: Address A")).toBeTruthy();
+    expect(modalScope.getByText("Unit Tersedia: 5")).toBeTruthy();
   });
 
-  // Purpose: Ensure navigation is triggered with correct params when button is pressed
-  // Expected Outcome: router.push is called with cluster ID and name
-  // Prerequisites: Modal must be open and cluster selected
-  it("navigates to ClusterScreen with correct params", async () => {
-    const mockClusters = [
-      {
-        id: 99,
-        name: "Cluster Z",
-        address: "Z Street",
-        category: "residential",
-        is_apartment: false,
-        available_unit: 20,
-        thumbnail_url: "http://thumbnail.jpg",
-        image_hotspots: [
-          {
-            shape: "rectangle" as "rectangle", // WTF IS THIS??!! WHYY??!!
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
-          },
-        ],
-      },
-    ];
-
-    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue({
-      clusters: mockClusters,
-      masterplan_url: "http://masterplan.jpg",
-    });
+  it("navigates to ClusterScreen with correct params on navigation button press", async () => {
+    /**
+     * Purpose: Check that tapping the navigation button routes to ClusterScreen with correct params.
+     * Expected Outcome: `router.push()` is called with `clusterId` and `clusterName`.
+     * Assumptions: The navigation button is inside the modal, and tapping it triggers a route push.
+     */
+    jest.spyOn(clusterRepo, "getClusters").mockResolvedValue(mockClusterResponse);
 
     const pushSpy = jest.spyOn(router, "push");
-    const { findByText } = render(<MapScreen />);
-    const hotspot = await findByText("Cluster Z");
+    const { findByTestId } = render(<MapScreen />);
+    const hotspot = await findByTestId("hotspot-button");
     fireEvent.press(hotspot);
 
-    const navigateButton = await findByText("Lihat Daftar Produk");
-    fireEvent.press(navigateButton);
+    const navigationButton = await findByTestId("navigation-button");
+    fireEvent.press(navigationButton);
 
     expect(pushSpy).toHaveBeenCalledWith({
       pathname: "/ClusterScreen",
-      params: { clusterId: mockCluster.id, clusterName: mockCluster.name },
+      params: { clusterId: 1, clusterName: "Cluster A" },
     });
   });
 });
