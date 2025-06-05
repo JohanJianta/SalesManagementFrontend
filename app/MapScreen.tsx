@@ -44,7 +44,7 @@ export default function MapScreen() {
     <SafeAreaView className="flex-1 bg-[#0F7480]">
       <View className="flex-1">
         {loading || !masterplanUrl ? (
-          <ActivityIndicator size="large" color="#fff" className="flex-1" />
+          <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
         ) : (
           <ReactNativeZoomableView
             maxZoom={2.5}
