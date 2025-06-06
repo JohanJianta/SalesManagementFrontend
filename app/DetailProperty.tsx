@@ -1,46 +1,35 @@
-import { View, Text, ScrollView, TouchableOpacity, Linking, SafeAreaView } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { getProductById } from "@/src/repositories/productRepo";
 import ImageCarousel from "@/src/components/ImageCarousel";
-import { ArrowRight } from "lucide-react-native";
-import React, { useLayoutEffect } from "react";
+import CustomModal from "@/src/components/CustomModal";
+import { Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import {
+  ArrowRight,
+  House,
+  MapPinned,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  BadgePercent,
+  X,
+} from "lucide-react-native";
 
 export default function ProductDetail() {
-  const data = {
-    id: 1,
-    name: "Alexandrite",
-    default_price: 3000000000,
-    corner_price: 5000000000,
-    product_units: [
-      { id: 1, name: "No. 5", type: "standard" },
-      { id: 2, name: "No. 6", type: "standard" },
-      { id: 3, name: "No. 15", type: "sudut" },
-    ],
-    product_features: [
-      { name: "Tanah", total: "119 m²" },
-      { name: "Bangunan", total: "145 m²" },
-      { name: "Lantai", total: "🏠2 Lantai" },
-      { name: "Kamar Tidur", total: "🛏️4+1 Kamar Tidur" },
-      { name: "Kamar Mandi", total: "🛁3+1 Kamar Mandi" },
-      { name: "Dapur", total: "🍳1 Dapur" },
-      { name: "Ruang Tamu", total: "🛋️2 Ruang Tamu" },
-      { name: "Parkir Mobil", total: "🚗2 Parkir Mobil" },
-    ],
-    product_images: [
-      "https://d1tqswfuhozddy.cloudfront.net/Treasure%20Island/Alexandrite_1.jpg?Expires=1749172693&Key-Pair-Id=K283S4CEHDJZ90&Signature=PlD~66ZUIBdO5T3Yy0~ThaofLJ4RmL~Qspc9bpDhAMiulCiocIrT~CK0HVfYYBHCZX28igUwxKEM3QWCREFkvzquCxWdrso~PtpwDc24lk~~QDCV0v-hUUzVA~daqlLfS4y4TOhW-DidNS4NKn~v5W9xTLPzBJTK3BV41g82l7fPMycMXUbH0RPD-ihXzItV2~qsIYJcHdRb6k-JPwKv2gxXxZrUW9s6k8gMcmoQAe86DZ91xZSHcp8TzJoC8WDdKPIDexs61~diGD3NUl4wWcrhzNOkpfz-h9qQWgiriwV6oM7flz5EgcgWp4tppFCFnf4c0FHi89jV0E7NWUYqZA__",
-      "https://d1tqswfuhozddy.cloudfront.net/Treasure%20Island/Alexandrite_2.jpg?Expires=1749172693&Key-Pair-Id=K283S4CEHDJZ90&Signature=J58koqafAOl09EUrysFH2YEc0wweBmWkYOSiB4CQJjvWJSx7wLdK9vkHmjQX4WFSzIAYNjwJzpOn6h~jFfjrqJQZopg2cXML88-2uRonjlCbbZJkbVARQHa4D480PuXfp7M7I2iqNfTdVRWWZkwTeTSc5ZZkqzie47Uy2gWF~W6h6UMiDcZFZnRowlGY7YxGhvgFOic0KAfpb9LVqD4p9zI3LLXzc1sruhhBjvBZlph74F2F7huPLuRpQEwTl0V3thWD~udXDjpfUOrpfWRIVvP1x3l7lYe4hECtTPP9dX~W9xjaXohoTX5EoPfWpguMEJfnHnNGKTQAB6DK0xd~cw__",
-    ],
-    cluster_ref: {
-      name: "Treasure Island",
-      brochure_url: "https://example.com/brochure/treasure_island.jpg",
-      promotions: [
-        {
-          id: 1,
-          title: "Promotion Example",
-          thumbnail_url: "https://example.com/thumbnail/promotion-1.jpg",
-        },
-      ],
-    },
-  };
+  const [loading, setLoading] = useState<boolean>(true);
+  const [product, setProduct] = useState<DetailProduct | null>(null);
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const { productId, propertyName } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -52,79 +41,222 @@ export default function ProductDetail() {
     });
   }, [navigation, propertyName]);
 
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
+  const fetchProduct = async () => {
+    try {
+      const productResponse = await getProductById(+productId);
+      setProduct(productResponse);
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Gagal mengambil data Product.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatRupiah = (value: number) => {
     return "Rp " + value.toLocaleString("id-ID");
   };
+
+  if (loading || !product) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#0F7480]">
+        <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
+      </SafeAreaView>
+    );
+  }
+
+  const { product_specifications: specs, product_units: units, cluster_ref: clusRef } = product;
+  const mainFeatures = product.product_features.filter((f) => f.name === "Tanah" || f.name === "Bangunan");
+  const subFeatures = product.product_features.filter((f) => f.name !== "Tanah" && f.name !== "Bangunan");
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F7480]">
       <ScrollView>
         <View className="flex-1 gap-4 pb-16">
-          {/* Gambar Properti */}
-          <ImageCarousel imageUrls={data.product_images} />
+          <ImageCarousel imageUrls={product.product_images} />
 
-          {/* Luas Tanah & Bangunan */}
-          <View className="flex-row justify-around px-4 mb-4">
-            {data.product_features.slice(0, 2).map((feature, index) => (
-              <View key={index} className="bg-white/80 rounded-xl p-3 w-[45%] items-center">
-                <Text className="text-teal-800 font-bold">{feature.name}</Text>
-                <Text className="text-lg text-teal-900 font-bold">{feature.total}</Text>
+          <View className="flex-1 gap-4 px-6 pb-6">
+            {mainFeatures.length > 0 && (
+              <View className="flex-1 flex-row justify-between gap-4">
+                {mainFeatures.map((feature, index) => (
+                  <View key={index} className="flex-1 flex-row items-center gap-4 px-4 py-3 bg-white/80 rounded-xl">
+                    {feature.name === "Tanah" ? (
+                      <MapPinned size={40} color="#07484E" />
+                    ) : (
+                      <House size={40} color="#07484E" />
+                    )}
+                    <View className="flex-1 items-center gap-2">
+                      <Text className="text-[#07484E] font-medium">{feature.name}</Text>
+                      <Text className="text-[#07484E] font-extrabold">{`${feature.total}²`}</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            )}
 
-          {/* Spesifikasi Detail */}
-          <View className="bg-white/80 rounded-xl mx-4 p-3 space-y-2 mb-4">
-            {data.product_features.slice(2).map((feature, index) => (
-              <Text key={index} className="text-teal-900">
-                • {feature.total}
-              </Text>
-            ))}
-          </View>
+            {subFeatures.length > 0 && (
+              <View className="flex-1 flex-row flex-wrap justify-between gap-x-4 gap-y-2 px-4 py-3 bg-white/80 rounded-xl">
+                {subFeatures.map((feature, index) => (
+                  <View key={index} className="flex-row gap-2 w-[47.5%] max-w-[225px]">
+                    <Text className="text-[#07484E] font-medium">{`•  ${feature.total} ${feature.name}`}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
 
-          {/* Harga Unit */}
-          <View className="flex-row justify-between items-center bg-white/90 mx-4 rounded-xl p-3 mb-3">
-            <View>
-              <Text className="text-teal-900 font-bold">
-                {formatRupiah(data.default_price)} <Text className="text-xs">[Standar]</Text>
-              </Text>
-              <Text className="text-teal-900 font-bold">
-                {formatRupiah(data.corner_price)} <Text className="text-xs">[Sudut]</Text>
-              </Text>
+            <View className="flex-1 bg-white/80 rounded-lg overflow-hidden">
+              <TouchableOpacity
+                testID="toggle-button"
+                className="min-h-[54px] flex-1 flex-row items-center py-3 px-6 bg-[#07484E]"
+                onPress={() => setExpanded(!expanded)}
+              >
+                <Text className="flex-1 text-center text-white font-medium">Spesifikasi</Text>
+                {expanded ? <ChevronDown size={40} color="#ffffff" /> : <ChevronRight size={40} color="#ffffff" />}
+              </TouchableOpacity>
+              {expanded && (
+                <View className="px-4 py-3 gap-2">
+                  {specs.length === 0 ? (
+                    <Text className="text-center text-[#07484E] font-medium">
+                      Tidak ada spesifikasi untuk properti ini
+                    </Text>
+                  ) : (
+                    specs.map((spec, index) => (
+                      <Text key={index} className="text-[#07484E] font-medium">{`${spec.name}: ${spec.detail}`}</Text>
+                    ))
+                  )}
+                </View>
+              )}
             </View>
-            <TouchableOpacity className="bg-teal-700 rounded-xl px-3 py-2 flex-row items-center">
-              <Text className="text-white font-bold mr-2">Lihat KPR</Text>
-              <ArrowRight size={16} color="white" />
-            </TouchableOpacity>
-          </View>
 
-          {/* Unit Tersedia */}
-          <View className="bg-white/90 mx-4 rounded-xl p-3 mb-5">
-            <Text className="text-teal-900 font-bold mb-2">Unit Tersedia:</Text>
-            {data.product_units.map((unit) => (
-              <Text key={unit.id} className="text-teal-800">
-                • {unit.name} [{unit.type}]
-              </Text>
-            ))}
-          </View>
-
-          {/* Tombol Lihat E-Brosur dan Promo */}
-          <View className="flex-row justify-around px-4 mb-6">
-            <TouchableOpacity
-              onPress={() => Linking.openURL(data.cluster_ref.brochure_url)}
-              className="bg-white rounded-xl px-4 py-3 w-[48%] items-center"
-            >
-              <Text className="text-teal-900 font-bold">Lihat E-Brosur</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (data.cluster_ref.promotions.length > 0) {
-                  Linking.openURL(data.cluster_ref.promotions[0].thumbnail_url);
+            <View className="flex-1 flex-row justify-between items-center bg-white/80 rounded-xl overflow-hidden">
+              <View className="flex-1 gap-2 px-4 py-3">
+                <Text className="text-[#07484E] font-extrabold">
+                  {formatRupiah(product.default_price)} <Text className="font-medium">[Standar]</Text>
+                </Text>
+                <Text className="text-[#07484E] font-extrabold">
+                  {formatRupiah(product.corner_price)} <Text className="font-medium">[Sudut]</Text>
+                </Text>
+              </View>
+              <TouchableOpacity
+                className="w-1/3 h-full justify-center items-center gap-2 bg-[#07484E]"
+                onPress={() =>
+                  router.push({
+                    pathname: "/KalkulatorKPR",
+                    params: { defaultPrice: product.default_price, cornerPrice: product.corner_price },
+                  })
                 }
-              }}
-              className="bg-white rounded-xl px-4 py-3 w-[48%] items-center"
+              >
+                <Text className="text-white font-medium">Lihat KPR</Text>
+                <ArrowRight size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="flex-1 px-4 py-3 gap-2 bg-white/80 rounded-xl">
+              <Text className="text-[#07484E] font-extrabold">Unit Tersedia:</Text>
+              <View className="flex-1 flex-row flex-wrap gap-2 justify-between">
+                {units.length === 0 ? (
+                  <Text className="text-[#07484E] font-medium">Tidak ada</Text>
+                ) : (
+                  units.map((unit, index) => (
+                    <Text key={index} className="text-[#07484E] font-medium w-[47.5%] max-w-[225px]">
+                      {`•  ${unit.name} [${unit.type === "standard" ? "Standar" : "Sudut"}]`}
+                    </Text>
+                  ))
+                )}
+              </View>
+            </View>
+
+            <View className="flex-1 flex-row justify-between gap-4">
+              <TouchableOpacity
+                className="flex-1 flex-row items-center gap-4 px-4 py-3 bg-[#07484E] rounded-xl"
+                onPress={() => {
+                  if (clusRef.brochure_url) {
+                    Linking.openURL(clusRef.brochure_url);
+                  } else {
+                    Alert.alert("Notifikasi", "Tidak ada brosur yang tersedia untuk properti ini");
+                  }
+                }}
+              >
+                <FileText size={40} color="#ffffff" />
+                <Text className="flex-1 text-center text-base/[24px] text-white font-medium">Lihat E-Brosur</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 flex-row items-center gap-4 px-4 py-3 bg-[#07484E] rounded-xl"
+                onPress={() => setModalOpen(true)}
+              >
+                <BadgePercent size={40} color="#ffffff" />
+                <Text className="flex-1 text-center text-base/[24px] text-white font-medium">Cek Promo</Text>
+              </TouchableOpacity>
+            </View>
+
+            <CustomModal isOpen={modalOpen} testID="promo-modal">
+              <View className="w-full h-3/5 p-6 rounded-xl gap-y-4 bg-white">
+                <TouchableOpacity className="absolute right-4 top-4" onPress={() => setModalOpen(false)}>
+                  <X size={24} color="#07484E" />
+                </TouchableOpacity>
+
+                <Text className="text-2xl font-extrabold text-[#07484E] text-center">Daftar Promo</Text>
+
+                {clusRef.promotions.length === 0 ? (
+                  <Text className="flex-1 px-10 align-middle text-center text-[#07484E] text-base/[24px] font-medium">
+                    Tidak ada promo yang tersedia untuk properti ini
+                  </Text>
+                ) : (
+                  <ScrollView>
+                    {clusRef.promotions.map((promo, index) => (
+                      <View key={index} className={`mb-4 bg-white rounded-xl shadow overflow-hidden`}>
+                        <Image
+                          source={{
+                            uri: promo.thumbnail_url || "https://via.placeholder.com/300x200.png?text=No+Image",
+                          }}
+                          resizeMode="cover"
+                          className="w-full h-40"
+                        />
+
+                        <View className="p-2">
+                          <Text className="text-sm font-semibold">{promo.title}</Text>
+                          <Text className="text-xs text-gray-500">
+                            {new Date(promo.created_at).toLocaleDateString("id-ID", {
+                              day: "2-digit",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </Text>
+                        </View>
+
+                        <TouchableOpacity
+                          className="bg-orange-500 p-2 items-center"
+                          onPress={() => {
+                            setModalOpen(false);
+                            router.push({
+                              pathname: "/PromoDetail",
+                              params: { promoId: promo.id },
+                            });
+                          }}
+                        >
+                          <Text className="text-white text-sm font-semibold">Lihat Detail</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </ScrollView>
+                )}
+              </View>
+            </CustomModal>
+
+            <TouchableOpacity
+              className="min-h-[54px] flex-1 items-center justify-center py-3 px-6 bg-[#07484E] rounded-lg"
+              testID="navigation-button"
+              onPress={() =>
+                router.push({
+                  pathname: "/AddBookingScreen",
+                  params: { clusterId: clusRef.id, productId: product.id },
+                })
+              }
             >
-              <Text className="text-teal-900 font-bold">Cek Promo</Text>
+              <Text className="text-white font-extrabold">Pesan Properti</Text>
             </TouchableOpacity>
           </View>
         </View>
