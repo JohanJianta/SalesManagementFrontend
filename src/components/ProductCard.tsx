@@ -17,9 +17,10 @@ export default function PropertyCard({ product, expanded, onToggle, onPress }: P
 
   return (
     <View className="bg-[#07484E] rounded-2xl w-full min-h-[175px] max-w-[500px] overflow-hidden">
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity testID="navigation-button" onPress={onPress}>
         {expanded ? (
           <ImageBackground
+            testID="expanded-image"
             source={imageSource}
             className="w-full h-[140px] justify-center items-center"
             resizeMode="cover"
@@ -29,7 +30,7 @@ export default function PropertyCard({ product, expanded, onToggle, onPress }: P
           </ImageBackground>
         ) : (
           <View className="flex-row items-center gap-4 p-6">
-            <Image source={imageSource} className="w-28 h-28" resizeMethod="resize" />
+            <Image testID="collapsed-image" source={imageSource} className="w-28 h-28" resizeMethod="resize" />
             <View className="flex-1 gap-4">
               <Text className="text-white text-xl font-extrabold">{name}</Text>
               <View className="flex-row flex-wrap justify-between gap-x-4 gap-y-2">
@@ -79,7 +80,7 @@ export default function PropertyCard({ product, expanded, onToggle, onPress }: P
         </View>
       )}
 
-      <TouchableOpacity onPress={onToggle} className="bg-[#073A3E] w-full items-center py-3">
+      <TouchableOpacity testID="toggle-button" onPress={onToggle} className="bg-[#073A3E] w-full items-center py-3">
         {expanded ? <ChevronUp size={24} color="#fbfcfc" /> : <ChevronDown size={24} color="#fbfcfc" />}
       </TouchableOpacity>
     </View>

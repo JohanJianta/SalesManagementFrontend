@@ -4,10 +4,11 @@ import React from "react";
 interface Props {
   spot: ImageHotspot;
   name?: string;
+  testID?: string;
   onPress: () => void;
 }
 
-export default function HotspotRenderer({ spot, name, onPress }: Props) {
+export default function HotspotRenderer({ spot, name, testID, onPress }: Props) {
   const FONT_SIZE = 40;
   const TEXT_RECT_HEIGHT = 70;
   const VERTICAL_TEXT_OFFSET = FONT_SIZE * 0.35;
@@ -27,7 +28,7 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       centerX = spot.x + spot.width / 2;
       centerY = spot.y + spot.height / 2;
       return (
-        <G onPressOut={onPress}>
+        <G testID={testID} onPressOut={onPress}>
           <Rect {...spot} fill="transparent" />
           {name && (
             <>
@@ -59,7 +60,7 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       centerX = spot.x;
       centerY = spot.y;
       return (
-        <G onPressOut={onPress}>
+        <G testID={testID} onPressOut={onPress}>
           <Circle cx={spot.x} cy={spot.y} r={spot.radius} fill="transparent" />
           {name && (
             <>
@@ -105,7 +106,7 @@ export default function HotspotRenderer({ spot, name, onPress }: Props) {
       const pointsStr = spot.points.map((p) => `${p.x},${p.y}`).join(" ");
 
       return (
-        <G onPressOut={onPress}>
+        <G testID={testID} onPressOut={onPress}>
           <Polygon points={pointsStr} fill="transparent" />
           {name && (
             <>

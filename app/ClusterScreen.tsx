@@ -1,15 +1,14 @@
-import { View, Alert, Text, ActivityIndicator, Dimensions, Image, ScrollView } from "react-native";
+import { View, Alert, Text, ActivityIndicator, Dimensions, Image, ScrollView, SafeAreaView } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { getClusterById } from "@/src/repositories/clusterRepo";
 import HotspotRenderer from "@/src/components/HotspotRenderer";
 import Svg, { Image as SvgImage } from "react-native-svg";
 import CustomHandle from "@/src/components/CustomHandle";
 import PropertyCard from "@/src/components/ProductCard";
 import HotspotMask from "@/src/components/HotspotMask";
-import { SafeAreaView } from "react-native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("screen");
 
@@ -76,7 +75,7 @@ export default function ClusterScreen() {
     if (!mapSize) {
       return (
         <View className="w-full h-[65%] items-center justify-center">
-          <ActivityIndicator size="large" color="#fff" className="flex-1" />
+          <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
         </View>
       );
     }
@@ -103,7 +102,7 @@ export default function ClusterScreen() {
           contentHeight={displayHeight}
         >
           <Svg width={displayWidth} height={displayHeight} viewBox={`0 0 ${mapSize.width} ${mapSize.height}`}>
-            <SvgImage href={{ uri: cluster.map_url }} />
+            <SvgImage testID="cluster-map-svg" href={{ uri: cluster.map_url }} />
 
             {expandedProductId && (
               <HotspotMask
@@ -114,7 +113,12 @@ export default function ClusterScreen() {
 
             {cluster.products.map((product) =>
               product.image_hotspots.map((spot, index) => (
-                <HotspotRenderer key={index} spot={spot} onPress={() => handleProductPress(product.id)} />
+                <HotspotRenderer
+                  key={index}
+                  spot={spot}
+                  testID="hotspot-button"
+                  onPress={() => handleProductPress(product.id)}
+                />
               ))
             )}
           </Svg>
@@ -133,7 +137,15 @@ export default function ClusterScreen() {
             product={product}
             expanded={expandedProductId === product.id}
             onToggle={() => handleProductPress(product.id)}
-            onPress={() => console.log(`Pindah ke Halaman Product ${product.name} (${product.id})`)}
+            onPress={() =>
+              router.push({
+                pathname: "/DetailProperty",
+                params: {
+                  productId: product.id,
+                  propertyName: `${cluster.name} - ${product.name}`,
+                },
+              })
+            }
           />
         ))}
       </View>
@@ -143,16 +155,18 @@ export default function ClusterScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0F7480]">
       {loading || !cluster ? (
-        <ActivityIndicator size="large" color="#fff" className="flex-1" />
+        <ActivityIndicator testID="activity-indicator" size="large" color="#fff" className="flex-1" />
       ) : cluster.map_url !== null ? (
         <>
           {renderMap()}
           <BottomSheet index={0} snapPoints={snapPoints} handleComponent={CustomHandle}>
-            <BottomSheetScrollView className="bg-[#0F7480]">{renderProductList()}</BottomSheetScrollView>
+            <BottomSheetScrollView testID="bottomsheet-scrollview" className="bg-[#0F7480]">
+              {renderProductList()}
+            </BottomSheetScrollView>
           </BottomSheet>
         </>
       ) : (
-        <ScrollView className="bg-[#0F7480]">{renderProductList()}</ScrollView>
+        <ScrollView testID="default-scrollview">{renderProductList()}</ScrollView>
       )}
     </SafeAreaView>
   );

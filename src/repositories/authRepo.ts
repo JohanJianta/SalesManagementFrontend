@@ -11,7 +11,7 @@ export async function register(name: string, email: string, password: string) {
     await saveToStorage("token", responseData.token);
     await saveToStorage("user", responseData.payload);
   } catch (error: any) {
-    throw error[0];
+    throw error?.[0] || error;
   }
 }
 
@@ -23,6 +23,6 @@ export async function login(email: string, password: string) {
     await saveToStorage("token", responseData.token);
     await saveToStorage("user", responseData.payload);
   } catch (error: any) {
-    throw error[0];
+    throw error?.[0] || error;
   }
 }

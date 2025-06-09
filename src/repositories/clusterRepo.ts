@@ -7,7 +7,7 @@ export const getClusters = async () => {
     const data = await getRequest<ClusterResponse>(`${API_ENDPOINT}`);
     return data;
   } catch (error: any) {
-    throw error[0];
+    throw error?.[0] || error;
   }
 };
 
@@ -16,6 +16,6 @@ export const getClusterById = async (id: number) => {
     const data = await getRequest<DetailCluster>(`${API_ENDPOINT}/${id}`);
     return data;
   } catch (error: any) {
-    throw error[0];
+    throw error?.[0] || error;
   }
 };
