@@ -118,7 +118,7 @@ export default function KalkulatorKPR() {
 </Text>
 
             <Text className="text-center text-gray-700 mt-1">
-              (Sudah termasuk pokok dan bunga)
+              (*disclaimer ini hanya simulasi)
             </Text>
           </>
         ) : (
