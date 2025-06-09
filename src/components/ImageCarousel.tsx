@@ -5,9 +5,10 @@ const { width } = Dimensions.get("window");
 
 interface Props {
   imageUrls: string[];
+  testID?: string;
 }
 
-export default function ImageCarousel({ imageUrls }: Props) {
+export default function ImageCarousel({ imageUrls, testID }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
@@ -18,7 +19,7 @@ export default function ImageCarousel({ imageUrls }: Props) {
   }).current;
 
   return (
-    <View>
+    <View testID={testID}>
       <FlatList
         data={imageUrls}
         keyExtractor={(_, index) => index.toString()}

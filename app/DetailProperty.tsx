@@ -76,7 +76,7 @@ export default function ProductDetail() {
     <SafeAreaView className="flex-1 bg-[#0F7480]">
       <ScrollView>
         <View className="flex-1 gap-4 pb-16">
-          <ImageCarousel imageUrls={product.product_images} />
+          <ImageCarousel testID="image-carousel" imageUrls={product.product_images} />
 
           <View className="flex-1 gap-4 px-6 pb-6">
             {mainFeatures.length > 0 && (
@@ -149,7 +149,9 @@ export default function ProductDetail() {
                   })
                 }
               >
-                <Text className="text-white font-medium">Lihat KPR</Text>
+                <Text testID="kpr-button" className="text-white font-medium">
+                  Lihat KPR
+                </Text>
                 <ArrowRight size={20} color="white" />
               </TouchableOpacity>
             </View>
@@ -172,6 +174,7 @@ export default function ProductDetail() {
             <View className="flex-1 flex-row justify-between gap-4">
               <TouchableOpacity
                 className="flex-1 flex-row items-center gap-4 px-4 py-3 bg-[#07484E] rounded-xl"
+                testID="brochure-button"
                 onPress={() => {
                   if (clusRef.brochure_url) {
                     Linking.openURL(clusRef.brochure_url);
@@ -185,6 +188,7 @@ export default function ProductDetail() {
               </TouchableOpacity>
               <TouchableOpacity
                 className="flex-1 flex-row items-center gap-4 px-4 py-3 bg-[#07484E] rounded-xl"
+                testID="open-modal"
                 onPress={() => setModalOpen(true)}
               >
                 <BadgePercent size={40} color="#ffffff" />
@@ -194,7 +198,11 @@ export default function ProductDetail() {
 
             <CustomModal isOpen={modalOpen} testID="promo-modal">
               <View className="w-full h-3/5 p-6 rounded-xl gap-y-4 bg-white">
-                <TouchableOpacity className="absolute right-4 top-4" onPress={() => setModalOpen(false)}>
+                <TouchableOpacity
+                  testID="close-modal"
+                  className="absolute right-4 top-4"
+                  onPress={() => setModalOpen(false)}
+                >
                   <X size={24} color="#07484E" />
                 </TouchableOpacity>
 
@@ -229,6 +237,7 @@ export default function ProductDetail() {
 
                         <TouchableOpacity
                           className="bg-orange-500 p-2 items-center"
+                          testID="promo-button"
                           onPress={() => {
                             setModalOpen(false);
                             router.push({
