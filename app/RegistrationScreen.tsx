@@ -43,7 +43,8 @@ export default function RegistrationScreen() {
     try {
       await register(fullName, email, password);
       Alert.alert("Sukses", "Registrasi berhasil");
-      router.push("/MapScreen");
+      if (router.canGoBack()) router.dismissAll();
+      router.replace("/MapScreen");
     } catch (error: any) {
       Alert.alert("Registrasi Gagal", error.message || "Terjadi kesalahan");
     }
@@ -98,7 +99,7 @@ export default function RegistrationScreen() {
         />
 
         <TouchableOpacity className="w-full bg-[#07484E] py-3 rounded-lg" onPress={handleRegister}>
-          <Text className="text-white font-semibold text-base text-center">DAFTAR</Text>
+          <Text className="text-white font-extrabold text-base text-center">Registrasi</Text>
         </TouchableOpacity>
 
         <TouchableOpacity className="mt-4" onPress={() => router.push("/LoginScreen")}>

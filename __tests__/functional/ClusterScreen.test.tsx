@@ -225,7 +225,7 @@ describe("ClusterScreen", () => {
     fireEvent.press(navigationButton);
 
     expect(pushSpy).toHaveBeenCalledWith({
-      pathname: "/DetailProperty",
+      pathname: "/DetailPropertyScreen",
       params: { productId: 1, propertyName: "Cluster A - Product A" },
     });
   });

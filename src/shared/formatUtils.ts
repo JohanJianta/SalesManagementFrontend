@@ -25,3 +25,15 @@ export function formatPriceRange(num1: number, num2: number): string {
   const maxM = max / million;
   return `<1~${format(maxM)} juta`;
 }
+
+export function formatRupiah(value: number) {
+  return "Rp " + value.toLocaleString("id-ID");
+}
+
+export function formatLocalDate(date: Date) {
+  return new Date(date).toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
+}

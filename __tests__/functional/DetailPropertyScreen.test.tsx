@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import * as productRepo from "@/src/repositories/productRepo";
-import DetailProperty from "@/app/DetailProperty";
+import DetailPropertyScreen from "@/app/DetailPropertyScreen";
 import { Alert, Linking } from "react-native";
 import { router } from "expo-router";
 import React from "react";
@@ -60,7 +60,7 @@ const mockDetailProduct: DetailProduct = {
   },
 };
 
-describe("<DetailProperty />", () => {
+describe("<DetailPropertyScreen />", () => {
   // Make sure every test starts with a clean slate
   beforeEach(() => {
     jest.clearAllMocks();
@@ -78,7 +78,7 @@ describe("<DetailProperty />", () => {
   it("shows a loading indicator while fetching detail product", async () => {
     jest.spyOn(productRepo, "getProductById").mockImplementation(() => new Promise(() => {}));
 
-    const { findByTestId } = render(<DetailProperty />);
+    const { findByTestId } = render(<DetailPropertyScreen />);
     expect(await findByTestId("activity-indicator")).toBeTruthy();
   });
 
@@ -94,7 +94,7 @@ describe("<DetailProperty />", () => {
   it("renders product data after successfully fetch detail product", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId, findByText } = render(<DetailProperty />);
+    const { findByTestId, findByText } = render(<DetailPropertyScreen />);
 
     // Image carousel rendered
     expect(await findByTestId("image-carousel")).toBeTruthy();
@@ -125,7 +125,7 @@ describe("<DetailProperty />", () => {
     const alertSpy = jest.spyOn(Alert, "alert");
     jest.spyOn(productRepo, "getProductById").mockRejectedValue({ message: "Fetch error" });
 
-    render(<DetailProperty />);
+    render(<DetailPropertyScreen />);
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith("Error", "Fetch error");
     });
@@ -143,7 +143,7 @@ describe("<DetailProperty />", () => {
   it("expands and collapses the Spesifikasi section", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId, queryByText } = render(<DetailProperty />);
+    const { findByTestId, queryByText } = render(<DetailPropertyScreen />);
     const toggle = await findByTestId("toggle-button");
 
     // Initially collapsed – spec text absent
@@ -170,7 +170,7 @@ describe("<DetailProperty />", () => {
   it("opens brochure link when the brochure button is pressed", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId } = render(<DetailProperty />);
+    const { findByTestId } = render(<DetailPropertyScreen />);
     fireEvent.press(await findByTestId("brochure-button"));
 
     expect(Linking.openURL).toHaveBeenCalledWith(mockDetailProduct.cluster_ref.brochure_url);
@@ -188,7 +188,7 @@ describe("<DetailProperty />", () => {
   it("opens and closes the promo modal", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId, queryByTestId } = render(<DetailProperty />);
+    const { findByTestId, queryByTestId } = render(<DetailPropertyScreen />);
 
     // Initially not visible
     expect(queryByTestId("promo-modal")).toBeNull();
@@ -214,13 +214,13 @@ describe("<DetailProperty />", () => {
   it("navigates to PromoDetail when the promo detail button is pressed", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId } = render(<DetailProperty />);
+    const { findByTestId } = render(<DetailPropertyScreen />);
 
     fireEvent.press(await findByTestId("open-modal"));
     fireEvent.press(await findByTestId("promo-button"));
 
     expect(router.push).toHaveBeenCalledWith({
-      pathname: "/PromoDetail",
+      pathname: "/PromoDetailScreen",
       params: { promoId: mockDetailProduct.cluster_ref.promotions[0].id },
     });
   });
@@ -237,11 +237,11 @@ describe("<DetailProperty />", () => {
   it("navigates to KalkulatorKPR when the kpr button is pressed", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId } = render(<DetailProperty />);
+    const { findByTestId } = render(<DetailPropertyScreen />);
     fireEvent.press(await findByTestId("kpr-button"));
 
     expect(router.push).toHaveBeenCalledWith({
-      pathname: "/KalkulatorKPR",
+      pathname: "/KalkulatorKPRScreen",
       params: { defaultPrice: mockDetailProduct.default_price, cornerPrice: mockDetailProduct.corner_price },
     });
   });
@@ -258,7 +258,7 @@ describe("<DetailProperty />", () => {
   it("navigates to AddBookingScreen when the booking button is pressed", async () => {
     jest.spyOn(productRepo, "getProductById").mockResolvedValue(mockDetailProduct);
 
-    const { findByTestId } = render(<DetailProperty />);
+    const { findByTestId } = render(<DetailPropertyScreen />);
     fireEvent.press(await findByTestId("navigation-button"));
 
     expect(router.push).toHaveBeenCalledWith({

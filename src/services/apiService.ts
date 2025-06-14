@@ -25,7 +25,21 @@ export async function postRequest<T>(endpoint: string, data: any, withoutAuthori
     }
 
     const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
-      headers: withoutAuthorization ? { Authorization: `Bearer ${token}` } : undefined,
+      headers: !withoutAuthorization ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data?.errors || error;
+  }
+}
+
+export async function putRequest<T>(endpoint: string, data: any): Promise<T> {
+  try {
+    const token = await getFromStorage<string>("token");
+    if (!token) throw new Error("Token tidak ditemukan.");
+
+    const response = await axios.put(`${BASE_URL}${endpoint}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   } catch (error: any) {

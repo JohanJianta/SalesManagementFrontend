@@ -4,7 +4,7 @@ const API_ENDPOINT = "/products";
 
 export async function getAvailableProperties() {
   try {
-    const data = await getRequest<PropertyCluster>(`${API_ENDPOINT}`);
+    const data = await getRequest<PropertyCluster[]>(`${API_ENDPOINT}`);
     return data;
   } catch (error: any) {
     throw error?.[0] || error;

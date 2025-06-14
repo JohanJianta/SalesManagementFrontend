@@ -73,7 +73,7 @@ export default function MapScreen() {
       </View>
 
       <CustomModal isOpen={modalOpen} testID="cluster-modal">
-        <View className="w-full p-6 rounded-xl gap-y-4 bg-white">
+        <View className="w-full p-6 rounded-xl gap-y-4 bg-[#e6f0f1]">
           <TouchableOpacity className="absolute right-4 top-4" onPress={() => setModalOpen(false)}>
             <X size={24} color="#07484E" />
           </TouchableOpacity>
@@ -107,12 +107,7 @@ export default function MapScreen() {
         </View>
       </CustomModal>
 
-      <BottomNavbar
-        activeTab="Map"
-        onNavigate={(tab) => {
-          console.log(`Navigating to ${tab}`);
-        }}
-      />
+      <BottomNavbar activeTab="Map" />
     </SafeAreaView>
   );
 }

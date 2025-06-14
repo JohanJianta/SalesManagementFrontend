@@ -2,8 +2,9 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { getProductById } from "@/src/repositories/productRepo";
 import ImageCarousel from "@/src/components/ImageCarousel";
+import { formatRupiah } from "@/src/shared/formatUtils";
 import CustomModal from "@/src/components/CustomModal";
-import { Image } from "react-native";
+import PromoCard from "@/src/components/PromoCard";
 import {
   View,
   Text,
@@ -25,7 +26,7 @@ import {
   X,
 } from "lucide-react-native";
 
-export default function ProductDetail() {
+export default function DetailPropertyScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [product, setProduct] = useState<DetailProduct | null>(null);
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -54,10 +55,6 @@ export default function ProductDetail() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return "Rp " + value.toLocaleString("id-ID");
   };
 
   if (loading || !product) {
@@ -144,7 +141,7 @@ export default function ProductDetail() {
                 className="w-1/3 h-full justify-center items-center gap-2 bg-[#07484E]"
                 onPress={() =>
                   router.push({
-                    pathname: "/KalkulatorKPR",
+                    pathname: "/KalkulatorKPRScreen",
                     params: { defaultPrice: product.default_price, cornerPrice: product.corner_price },
                   })
                 }
@@ -197,7 +194,7 @@ export default function ProductDetail() {
             </View>
 
             <CustomModal isOpen={modalOpen} testID="promo-modal">
-              <View className="w-full h-3/5 p-6 rounded-xl gap-y-4 bg-white">
+              <View className="w-full h-3/5 p-6 rounded-xl gap-y-4 bg-[#e6f0f1]">
                 <TouchableOpacity
                   testID="close-modal"
                   className="absolute right-4 top-4"
@@ -214,41 +211,15 @@ export default function ProductDetail() {
                   </Text>
                 ) : (
                   <ScrollView>
-                    {clusRef.promotions.map((promo, index) => (
-                      <View key={index} className={`mb-4 bg-white rounded-xl shadow overflow-hidden`}>
-                        <Image
-                          source={{
-                            uri: promo.thumbnail_url || "https://via.placeholder.com/300x200.png?text=No+Image",
-                          }}
-                          resizeMode="cover"
-                          className="w-full h-40"
-                        />
-
-                        <View className="p-2">
-                          <Text className="text-sm font-semibold">{promo.title}</Text>
-                          <Text className="text-xs text-gray-500">
-                            {new Date(promo.created_at).toLocaleDateString("id-ID", {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            })}
-                          </Text>
-                        </View>
-
-                        <TouchableOpacity
-                          className="bg-orange-500 p-2 items-center"
-                          testID="promo-button"
-                          onPress={() => {
-                            setModalOpen(false);
-                            router.push({
-                              pathname: "/PromoDetail",
-                              params: { promoId: promo.id },
-                            });
-                          }}
-                        >
-                          <Text className="text-white text-sm font-semibold">Lihat Detail</Text>
-                        </TouchableOpacity>
-                      </View>
+                    {clusRef.promotions.map((item, index) => (
+                      <PromoCard
+                        key={index}
+                        promo={item}
+                        onPress={() => {
+                          setModalOpen(false);
+                          router.push({ pathname: "/PromoDetailScreen", params: { promoId: item.id } });
+                        }}
+                      />
                     ))}
                   </ScrollView>
                 )}

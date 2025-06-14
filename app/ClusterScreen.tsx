@@ -39,20 +39,16 @@ export default function ClusterScreen() {
       (width, height) => {
         setMapSize({ width, height });
       },
-      () => {
-        console.error("Failed to get original image size.");
-        console.error("Default value (594, 668) will be used instead");
-        setMapSize({ width: 594, height: 668 });
-      }
+      () => setMapSize({ width: 594, height: 668 })
     );
   }, [cluster?.map_url]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: clusterName?.toString() || "Cluster Screen",
+      title: clusterName?.toString() || cluster?.name || "Cluster Screen",
     });
-  }, [navigation, clusterName]);
+  }, [navigation, clusterName, cluster?.name]);
 
   const fetchCluster = async () => {
     try {
@@ -139,7 +135,7 @@ export default function ClusterScreen() {
             onToggle={() => handleProductPress(product.id)}
             onPress={() =>
               router.push({
-                pathname: "/DetailProperty",
+                pathname: "/DetailPropertyScreen",
                 params: {
                   productId: product.id,
                   propertyName: `${cluster.name} - ${product.name}`,

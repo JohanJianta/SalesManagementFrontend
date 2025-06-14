@@ -10,7 +10,8 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      router.push("/MapScreen");
+      if (router.canGoBack()) router.dismissAll();
+      router.replace("/MapScreen");
     } catch (error: any) {
       Alert.alert("Login Gagal", error.message || "Periksa email dan password");
     }
@@ -46,7 +47,7 @@ export default function LoginScreen() {
         />
 
         <TouchableOpacity className="w-full bg-[#07484E] py-3 rounded-lg" onPress={handleLogin}>
-          <Text className="text-white font-semibold text-base text-center">LOGIN</Text>
+          <Text className="text-white font-extrabold text-base text-center">Login</Text>
         </TouchableOpacity>
 
         <TouchableOpacity className="mt-4" onPress={() => router.push("/RegistrationScreen")}>
