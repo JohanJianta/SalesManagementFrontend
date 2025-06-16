@@ -1,6 +1,6 @@
-# SalesManagement Test Ground
+# Sales Property Management Test Ground
 
-This directory includes unit and functional tests for the `SalesManagement` React Native app. The tests are written using [Jest](https://jestjs.io/) and [@testing-library/react-native](https://callstack.github.io/react-native-testing-library/).
+This directory includes unit and functional tests for the `Sales Property Management` React Native app. The tests are written using [Jest](https://jestjs.io/) and [@testing-library/react-native](https://callstack.github.io/react-native-testing-library/).
 
 ## Prerequisites
 
