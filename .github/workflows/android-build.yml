@@ -25,11 +25,8 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: Authenticate with Expo
-        run: eas login --token ${{ secrets.EXPO_TOKEN }}
-
       - name: Build Android with EAS
-        run: eas build --platform android --profile production --non-interactive --json > android-build.json
+        run: EXPO_TOKEN=${{ secrets.EXPO_TOKEN }} eas build --platform android --profile production --non-interactive --json > android-build.json
 
       - name: Download AAB file
         id: download_android
