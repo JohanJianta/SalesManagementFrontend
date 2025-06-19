@@ -40,6 +40,19 @@ export default ({ config }) => ({
         android: {
           usesCleartextTraffic: true,
         },
+        ios: {
+          infoPlist: {
+            NSAppTransportSecurity: {
+              NSAllowsArbitraryLoads: true,
+              NSExceptionDomains: {
+                localhost: {
+                  NSTemporaryExceptionAllowsInsecureHTTPLoads: true,
+                  NSTemporaryExceptionMinimumTLSVersion: "TLSv1.0",
+                },
+              },
+            },
+          },
+        },
       },
     ],
   ],

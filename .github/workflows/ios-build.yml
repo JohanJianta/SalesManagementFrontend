@@ -1,0 +1,46 @@
+name: Expo iOS Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-ios:
+    name: Build iOS App with EAS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Authenticate with Expo
+        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build iOS with EAS
+        run: eas build --platform ios --profile production --non-interactive --json > ios-build.json
+
+      - name: Download IPA file
+        id: download_ios
+        run: |
+          apt-get update && apt-get install -y jq curl
+          url=$(jq -r '.[0].artifacts.buildUrl' ios-build.json)
+          echo "Download URL: $url"
+          curl -L -o app-ios.ipa "$url"
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-ios
+          path: app-ios.ipa
