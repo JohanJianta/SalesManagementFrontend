@@ -43,6 +43,7 @@ export default ({ config }) => ({
         },
         ios: {
           infoPlist: {
+            ITSAppUsesNonExemptEncryption: false,
             NSAppTransportSecurity: {
               NSAllowsArbitraryLoads: true,
               NSExceptionDomains: {
