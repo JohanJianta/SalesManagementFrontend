@@ -10,6 +10,7 @@ export default ({ config }) => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    bundleIdentifier: "com.wrendy.salespropertymanagement",
   },
   android: {
     adaptiveIcon: {
